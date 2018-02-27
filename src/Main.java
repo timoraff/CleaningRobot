@@ -7,14 +7,14 @@ public class Main {
         Coords from = new Coords(2.0,2.0);
         Coords to = new Coords(2.0,-2.0);
         Coords pos = maze.getCorrectPosition(from, to);
-        System.out.println(pos.getX() + "/" + pos.getY());
+        System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 
         from.setX(2.0);
         from.setY(2.0);
         to.setX(2.0);
         to.setY(4.0);
         pos = maze.getCorrectPosition(from, to);
-        System.out.println(pos.getX() + "/" + pos.getY());
+        System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 
 
         from.setX(2.0);
@@ -22,7 +22,7 @@ public class Main {
         to.setX(4.0);
         to.setY(7.0);
         pos = maze.getCorrectPosition(from, to);
-        System.out.println(pos.getX() + "/" + pos.getY());
+        System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 	}
 
 }
