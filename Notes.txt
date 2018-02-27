@@ -1,0 +1,8 @@
+Motion Controll
+
+Getting (faked) data (Vr and Vl)
+
+--> Calculate new position after timestep delta t = x (Rouven)
+--> Check for Colision (Julian)
+	--> If Colision calculate real position (Bouncing against wall)
+--> Check in History how good step was 
