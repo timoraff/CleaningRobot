@@ -13,4 +13,9 @@ public class Edges {
     Coords getTo() {
         return to;
     }
+    
+    @Override
+    public String toString() {
+        return "[" + from.toString() + ", " + to.toString() + "]";
+    }
 }

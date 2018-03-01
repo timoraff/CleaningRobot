@@ -4,6 +4,7 @@ public class Main {
     public static void main(String[] args) {
         //how to get the correct position for the robot
         Maze maze = new Maze();
+        Visualizer visualizer = new Visualizer(maze);
         Coords from = new Coords(2.0,2.0);
         Coords to = new Coords(2.0,-2.0);
         Coords pos = maze.getCorrectPosition(from, to);

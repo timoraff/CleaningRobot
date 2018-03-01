@@ -104,4 +104,12 @@ public class Maze {
     public Coords getMinPos() {
         return minPos;
     }
+    
+    public Set<Edges> getEnvironment() {
+        return environment;
+    }
+    
+    public Set<Edges> getObstacle() {
+        return obstacle;
+    }
 }
