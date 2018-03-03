@@ -96,6 +96,13 @@ public class Maze {
         }
         return newPos;
     }
+    
+    public double[] calculateSensorValues() {
+    	double sensors[]= new double[12];
+    	//TODO implement logic  --> for each sensor either the distance to wall or 0 or -1 when no wall in distance 
+    	// distance should be limited
+    	return sensors;
+    }
 
     public Coords getMaxPos() {
         return maxPos;
