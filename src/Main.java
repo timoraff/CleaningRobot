@@ -10,7 +10,7 @@ public class Main {
 		// how to get the correct position for the robot
 		Maze maze = new Maze();
 		Visualizer visualizer = new Visualizer(maze);
-		Robot robo = new Robot(STARTINGX, STARTINGY);
+		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
 
 		/*
 		 * init a new population with size STARTINGPOP evolve this population for a

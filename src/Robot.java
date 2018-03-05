@@ -55,7 +55,7 @@ public class Robot {
 //		sensors[13] = posY;
 //		sensors[14] = direction;
 //		return sensors;
-		return maze.calculateSensorValuesTest();
+		return maze.calculateSensorValues();
 	}
 
 }

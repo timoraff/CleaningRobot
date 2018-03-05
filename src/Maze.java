@@ -6,9 +6,9 @@ import java.util.Set;
 public class Maze {
     private double minX, minY;
     private double maxX, maxY;
-    private Set<Edges> environment;
-    private Set<Edges> obstacle;
-    private Coords currentRobotsPosition;
+    private static Set<Edges> environment;
+//    private Set<Edges> obstacle;
+    private static Coords currentRobotsPosition;
 
     /**
      * contains the coordinate system, including the walls
@@ -52,9 +52,9 @@ public class Maze {
         for (Edges wall : environment) {
             calculateIntersection(oldPos, newPos, wall, true);
         }
-        for (Edges ob : obstacle) {
-            calculateIntersection(oldPos, newPos, ob, true);
-        }
+//        for (Edges ob : obstacle) {
+//            calculateIntersection(oldPos, newPos, ob, true);
+//        }
         currentRobotsPosition = newPos;
         return newPos;
     }
@@ -235,9 +235,9 @@ public class Maze {
         return environment;
     }
     
-    public Set<Edges> getObstacle() {
-        return obstacle;
-    }
+//    public Set<Edges> getObstacle() {
+//        return obstacle;
+//    }
 
     public Coords getCurrentRobotsPosition() {
         return currentRobotsPosition;

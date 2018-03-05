@@ -5,9 +5,9 @@ class Visualizer extends JPanel {
 	
 	private static final double BORDER = 100.0;
 	private static final double SCALE = 15.0;
-	private int frameWidth;
-	private int frameHeight;
 	private Maze maze;
+        private int frameWidth;
+        private int frameHeight;
 	private JFrame frame;
 	
 	public Visualizer(Maze maze) {
@@ -28,59 +28,66 @@ class Visualizer extends JPanel {
 	
 	private void drawEnvironment(Graphics g) {
 		
-		int maxX = 0;
-		int maxY = 0;
-
-		
 		for (Edges edge : maze.getEnvironment()) {
 			
-			int x1 = (int)(((double)edge.getFrom().getX())*SCALE+BORDER);
-			int y1 = (int)(((double)edge.getFrom().getY())*SCALE+BORDER);
-			int x2 = (int)(((double)edge.getTo().getX())*SCALE+BORDER);
-			int y2 = (int)(((double)edge.getTo().getY())*SCALE+BORDER);
+			int x1 = (int)(((double)edge.getFrom().getX())*SCALE);
+			int y2 = (int)(((double)edge.getFrom().getY())*SCALE);
+			int x2 = (int)(((double)edge.getTo().getX())*SCALE);
+			int y1 = (int)(((double)edge.getTo().getY())*SCALE);
 			
-			g.drawLine(x1, y1, x2, y2);
+			g.drawLine(x1+(int)BORDER, y1+(int)BORDER, x2+(int)BORDER, y2+(int)BORDER);
 			
-			if (Math.max(x1, x2) > maxX) {
-				maxX = Math.max(x1, x2);
-				frameWidth = maxX + (int)BORDER;
-
-			}
-			if (Math.max(y1, y2) > maxY) {
-				maxY = Math.max(y1, y2);
-				frameHeight = maxY + (int)BORDER;
-			}
-		}
-                
-        frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
-		frame.pack();
+                }
 	}
+        
+    private void getFrameDimensions() {
+        
+        int maxX = 0;
+        int maxY = 0;
+        int minX = 0;
+        int minY = 0;
+
+        for (Edges edge : maze.getEnvironment()) {
+
+                if (Math.max(edge.getFrom().getX(), edge.getTo().getX()) > maxX) {
+                        maxX = (int)Math.max(edge.getFrom().getX(), edge.getTo().getX());
+                }
+                if (Math.max(edge.getFrom().getY(), edge.getTo().getY()) > maxY) {
+                        maxY = (int)Math.max(edge.getFrom().getY(), edge.getTo().getY());
+                }
+                if (Math.min(edge.getFrom().getX(), edge.getTo().getX()) > minX) {
+                        minX = (int)Math.min(edge.getFrom().getX(), edge.getTo().getX());
+                }
+                if (Math.min(edge.getFrom().getY(), edge.getTo().getY()) > minY) {
+                        minY = (int)Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                }
+        }
+
+        frameWidth = (int)(maxX*SCALE+2*BORDER);
+        frameHeight = (int)(maxY*SCALE+2*BORDER);
+        frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
+        frame.pack();
+    }
         
     private void drawRobot(Graphics g) {
             
         Coords roboCoords = maze.getCurrentRobotsPosition();
-        g.drawRect((int)(roboCoords.getX()-SCALE/2.0), (int)(roboCoords.getY()-SCALE/2.0), (int)SCALE, (int)SCALE);
+        g.setColor(Color.RED);
+        g.fillRect((int)(BORDER+roboCoords.getX()*SCALE-SCALE), (int)(BORDER+roboCoords.getY()*SCALE-SCALE), (int)SCALE, (int)SCALE);
     }
 	
-	private void drawObstacles(Graphics g) {
-		
-		for (Edges edge : maze.getObstacle()) {
-			
-			int x1 = (int)(((double)edge.getFrom().getX())*SCALE+BORDER);
-			int y1 = (int)(((double)edge.getFrom().getY())*SCALE+BORDER);
-			int x2 = (int)(((double)edge.getTo().getX())*SCALE+BORDER);
-			int y2 = (int)(((double)edge.getTo().getY())*SCALE+BORDER);
-			
-			g.drawLine(x1, y1, x2, y2);
-		}
-	}
-	
-	@Override
-	public void paintComponent(Graphics g) {
-		
-		super.paintComponent(g);
-		drawEnvironment(g);
-		drawObstacles(g);
-        drawRobot(g);
-	}
+    @Override
+    public void paintComponent(Graphics g) {
+
+            super.paintComponent(g);
+            
+            getFrameDimensions();
+            
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.translate(0, frameHeight);
+            g2d.scale(1.0, -1.0);
+    
+            drawEnvironment(g);
+            drawRobot(g);
+    }
 }
