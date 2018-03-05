@@ -39,25 +39,6 @@ public class Maze {
         currentRobotsPosition.setY(y);
     }
 
-    /**
-     * function to calculate Y
-     * @param point robot's current position
-     * @param angle angle of the ray
-     * @return y intersection with the wall (x=0 and x=30)
-     */
-    public double castRay(Coords point, double angle) {
-        double x = maxX;
-        double m = Math.tan(Math.toRadians(angle));
-        double n = point.getY() - m * point.getX();
-
-        if(angle > 90 && angle < 270)
-            x = minX;
-//        if(angle == 90 || angle == 270)
-//            x = point.getX();
-
-        return m * x + n;
-    }
-
     public Coords getCorrectPosition(Coords oldPos, Coords newPos) {
 
         double angle = Math.atan2((-newPos.getY()) - (-oldPos.getY()), newPos.getX() - oldPos.getX());
@@ -134,7 +115,7 @@ public class Maze {
         return h;
     }
 
-    public double[] calculateSensorValues() {
+    public static double[] calculateSensorValues() {
         double sensors[]= new double[15];
         double[] degrees = {0,30,60,90,120,150,180,210,240,270,300,330};
         for(int i = 0; i < degrees.length; i++) {
@@ -146,45 +127,67 @@ public class Maze {
 
         for(int i = 0; i < degrees.length; i++) {
             for(Edges wall : environment) {
-                double rayY = castRay(currentRobotsPosition, degrees[i]);
-                double rayX = maxX;
-                if(degrees[i]>90.0 && degrees[i]<270.0)
-                    rayX = minX;
+                
+                // ray
                 double A1;
-                if (rayX == RX) {
+                double B1 = 0;
+                if (degrees[i] == 90||degrees[i] == 270) {
                     A1 = Integer.MAX_VALUE;
+                } else if (degrees[i] == 180||degrees[i] == 0) {
+                    A1 = 0;
                 } else {
-                    A1  = (rayY - RY) / (rayX - RX);
+                    A1  = Math.tan(Math.toRadians(degrees[i]));
+                    B1 = RY - RX * A1;
                 }
-                double B1 = RY - RX * A1;
 
+                // edge
                 double A2;
+                double B2 = 0;
                 if (wall.getTo().getX() == wall.getFrom().getX()) {
                     A2 = Integer.MAX_VALUE;
+                } else if (wall.getTo().getY() == wall.getFrom().getY()) {
+                    A2 = 0;
                 } else {
                     A2 = (wall.getTo().getY() - wall.getFrom().getY()) / (wall.getTo().getX() - wall.getFrom().getX());
+                    B2 = wall.getFrom().getY() - wall.getFrom().getX() * A2;
                 }
-                double B2 = wall.getFrom().getY() - wall.getFrom().getX() * A2;
 
-                if (A2 == A1) {
-                    // parallel
-                }
-                else {
+                // in case they are not parralel
+                if (A1 != A2) {
                     double x, y;
                     if (A2 == Integer.MAX_VALUE && A1 == 0) {
                         x = wall.getFrom().getX();
-                        y = currentRobotsPosition.getY();
+                        y = RY;
                     } else if (A1 == Integer.MAX_VALUE && A2 == 0) {
-                        x = currentRobotsPosition.getX();
+                        x = RY;
                         y = wall.getFrom().getY();
-                    }
-                    else {
+                    } else if (A1 == 0) {
+                        y = RY;
+                        x = (y - B2) / A2;				
+                    } else if (A2 == 0) {
+                        y = wall.getFrom().getY();
+                        x = (y - B1) / A1;
+                    } else if (A1 == Integer.MAX_VALUE) {
+                        x = RX;
+                        y = x*A2 + B2;	
+                    } else if (A2 == Integer.MAX_VALUE) {
+                        x = wall.getFrom().getX();
+                        y = x*A1 + B1;
+                    } else {
                         x = (B2 - B1) / (A1 - A2);
                         y = A1 * x + B1;
                     }
 
-                    if(wall.getFrom().getX() <= x && x <= wall.getTo().getX() && wall.getFrom().getY() <= y && y <= wall.getTo().getY()) {
+                    double minX = Math.min(wall.getFrom().getX(), wall.getTo().getX());
+                    double maxX = Math.max(wall.getFrom().getX(), wall.getTo().getX());
+                    double minY = Math.min(wall.getFrom().getY(), wall.getTo().getY());
+                    double maxY = Math.min(wall.getFrom().getY(), wall.getTo().getY());
+                    if(minX <= x && x <= maxX && minY <= y && y <= maxY) {
                         double distance = Math.sqrt(Math.pow(x - RX, 2) + Math.pow(y - RY, 2));
+                        if (degrees[i] == 60) {
+                            System.out.println("dis: " + distance + " x: " + x + " y: " + y);
+                        }
+
                         if (0.0 < degrees[i] && 90.0 > degrees[i]) {
                             if (x > RX && y > RY) {
                                 sensors[i] = Math.min(sensors[i], distance);
@@ -222,11 +225,10 @@ public class Maze {
                             }
                         }
                     }
-
                 }
             }
         }
-    	return sensors;
+        return sensors;
     }
 
     public Set<Edges> getEnvironment() {
