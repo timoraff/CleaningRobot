@@ -32,8 +32,8 @@ public class Maze {
 
     public void updatePosition(double x, double y) {
         //check outside of environment
-        getCurrentRobotsPosition().setX(x);
-        getCurrentRobotsPosition().setY(y);
+        currentRobotsPosition.setX(x);
+        currentRobotsPosition.setY(y);
     }
 
     /**
@@ -54,7 +54,7 @@ public class Maze {
         return m * x + n;
     }
 
-    public boolean simulateMovement(Coords oldPos, Coords newPos) {
+    public Coords getCorrectPosition(Coords oldPos, Coords newPos) {
 
         double angle = Math.atan2((-newPos.getY()) - (-oldPos.getY()), newPos.getX() - oldPos.getX());
         double degrees = Math.toDegrees(angle);
@@ -70,8 +70,8 @@ public class Maze {
         for (Edges ob : obstacle) {
             calculateIntersection(oldPos, newPos, ob, true);
         }
-//        currentRobotsPosition = newPos;
-        return false;
+        currentRobotsPosition = newPos;
+        return newPos;
     }
 
     /**
@@ -130,90 +130,6 @@ public class Maze {
         return h;
     }
 
-    public double[] calculateSensorValuesTest() {
-        double[] sensors = new double[15];
-        double[] degrees = { 0.0, 30.0, 60.0, 90.0, 120.0, 150.0, 180.0, 210.0, 240.0, 270.0, 300.0, 330.0 };
-        for(int i = 0; i < degrees.length; i++) {
-            sensors[i] = -1;
-        }
-        for(Edges wall : environment) {for(int i = 0; i < degrees.length; i++) {
-            double yDeg = castRay(getCurrentRobotsPosition(), degrees[i]);
-            double xDeg = maxX;
-            if(degrees[i] > 90 && degrees[i] < 270)
-                xDeg = minX;
-            if(degrees[i] == 90 || degrees[i] == 270)
-                xDeg = getCurrentRobotsPosition().getX();
-            //a = y1 - y2
-            //b = x2 - x1
-            //c = x2y1 - x1y2
-            //xs = (c1b2 - c2b1)/(a1b2 - a2b1)
-            //ys = (a1c2 - a2c1)/(a1b2 - a2b1)
-                //wall
-//                double x1 = wall.getFrom().getX();
-//                double y1 = wall.getFrom().getY();
-//                double x2 = wall.getTo().getX();
-//                double y2 = wall.getTo().getY();
-//                double a1 = y1 - y2;
-//                double b1 = x2 - x1;
-//                double c1 = x2 * y1 - x1 * y2;
-//
-//                //robot
-//                double x3 = currentRobotsPosition.getX();
-//                double y3 = currentRobotsPosition.getY();
-//                double x4 = xDeg;
-//                double y4 = yDeg;
-//                double a2 = y3 - y4;
-//                double b2 = x4 - x3;
-//                double c2 = x4 * y3 - x3 * y4;
-//
-//                double n = (a1 * b2 - a2 * b1);
-//
-//                double xs = (c1 * b2 - c2 * b1) / n;
-//                double ys = (a1 * c2 - a2 * c1) / n;
-//
-//                double distance = Math.sqrt(Math.pow(x3 - xs, 2) + Math.pow(y3 - ys, 2));
-//                if(degrees[i] == 0 && wall.getDirection().equals("E")) {
-//                    sensors[i] = distance;
-//                }
-//                if(degrees[i] == 90 && wall.getDirection().equals("S")) {
-//                    sensors[i] = distance;
-//                }
-//                if(degrees[i] == 180 && wall.getDirection().equals("W")) {
-//                    sensors[i] = distance;
-//                }
-//                if(degrees[i] == 270 && wall.getDirection().equals("N")) {
-//                    sensors[i] = distance;
-//                }
-                //wall
-                double x1 = wall.getFrom().getX();
-                double y1 = wall.getFrom().getY();
-                double x2 = wall.getTo().getX();
-                double y2 = wall.getTo().getY();
-                double a1 = y1 - y2;
-                double b1 = x2 - x1;
-                double c1 = x2 * y1 - x1 * y2;
-
-                //robot
-                double x3 = getCurrentRobotsPosition().getX();
-                double y3 = getCurrentRobotsPosition().getY();
-                double x4 = xDeg;
-                double y4 = yDeg;
-                double a2 = y3 - y4;
-                double b2 = x4 - x3;
-                double c2 = x4 * y3 - x3 * y4;
-
-                double n = (a1 * b2 - a2 * b1);
-                double xs = (c1 * b2 - c2 * b1) / n;
-                double ys = (a1 * c2 - a2 * c1) / n;
-                double distance = Math.sqrt(Math.pow(x3 - xs, 2) + Math.pow(y3 - ys, 2));
-                if(xs >= minX && xs <= maxX && ys >= minY && ys <= maxY && sensors[i] < distance)
-                    sensors[i] = distance;
-                System.out.println(degrees[i] + " " + xs + " " + ys + " " + distance);
-            }
-        }
-        return sensors;
-    }
-
     public double[] calculateSensorValues() {
         // cast rays to calculate distance to the wall/object
         // calculate distance counter clock wise
@@ -223,35 +139,35 @@ public class Maze {
         // down -> right-down-down -> right-right-down
     	double sensors[]= new double[15];
         // cast ray right to boundary wall
-        double dR = maxX - getCurrentRobotsPosition().getX();
+        double dR = maxX - currentRobotsPosition.getX();
         // cast ray up to boundary wall
-        double dU = getCurrentRobotsPosition().getY();
+        double dU = currentRobotsPosition.getY();
         // cast ray left to boundary wall
-        double dL = getCurrentRobotsPosition().getX();
+        double dL = currentRobotsPosition.getX();
         // cast ray down to boundary wall
-        double dD = maxY - getCurrentRobotsPosition().getY();
+        double dD = maxY - currentRobotsPosition.getY();
         for (Edges ob: obstacle) {
-            double right = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, getCurrentRobotsPosition().getY()), ob, false);
+            double right = calculateIntersection(currentRobotsPosition, new Coords(maxX, currentRobotsPosition.getY()), ob, false);
             if(right > 0.0 && right < 1.0) {
-                double tmp = Math.abs(ob.getFrom().getX() - getCurrentRobotsPosition().getX());
+                double tmp = Math.abs(ob.getFrom().getX() - currentRobotsPosition.getX());
                 if(dR > tmp)
                     dR = tmp;
             }
-            double up = calculateIntersection(getCurrentRobotsPosition(), new Coords(getCurrentRobotsPosition().getX(), minY), ob, false);
+            double up = calculateIntersection(currentRobotsPosition, new Coords(currentRobotsPosition.getX(), minY), ob, false);
             if(up > 0.0 && up < 1.0) {
-                double tmp = Math.abs(getCurrentRobotsPosition().getY() - ob.getFrom().getY());
+                double tmp = Math.abs(currentRobotsPosition.getY() - ob.getFrom().getY());
                 if (dU > tmp)
                     dU = tmp;
             }
-            double left = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, getCurrentRobotsPosition().getY()), ob, false);
+            double left = calculateIntersection(currentRobotsPosition, new Coords(minX, currentRobotsPosition.getY()), ob, false);
             if(left > 0.0 && left < 1.0) {
-                double tmp = Math.abs(getCurrentRobotsPosition().getX() - ob.getFrom().getX());
+                double tmp = Math.abs(currentRobotsPosition.getX() - ob.getFrom().getX());
                 if (dL > tmp)
                     dL = tmp;
             }
-            double down = calculateIntersection(getCurrentRobotsPosition(), new Coords(getCurrentRobotsPosition().getX(), maxY), ob, false);
+            double down = calculateIntersection(currentRobotsPosition, new Coords(currentRobotsPosition.getX(), maxY), ob, false);
             if(down > 0.0 && down < 1.0) {
-                double tmp = Math.abs(ob.getFrom().getY() - getCurrentRobotsPosition().getY());
+                double tmp = Math.abs(ob.getFrom().getY() - currentRobotsPosition.getY());
                 if (dD > tmp)
                     dD = tmp;
             }
@@ -268,14 +184,14 @@ public class Maze {
         double mRRD = Math.tan(Math.toRadians(330));
 
         // n
-        double nRRU = (-getCurrentRobotsPosition().getX()) * mRRU;
-        double nRUU = (-getCurrentRobotsPosition().getX()) * mRUU;
-        double nLUU = (-getCurrentRobotsPosition().getX()) * mLUU;
-        double nLLU = (-getCurrentRobotsPosition().getX()) * mLLU;
-        double nLLD = (-getCurrentRobotsPosition().getX()) * mLLD;
-        double nLDD = (-getCurrentRobotsPosition().getX()) * mLDD;
-        double nRDD = (-getCurrentRobotsPosition().getX()) * mRDD;
-        double nRRD = (-getCurrentRobotsPosition().getX()) * mRRD;
+        double nRRU = (-currentRobotsPosition.getX()) * mRRU;
+        double nRUU = (-currentRobotsPosition.getX()) * mRUU;
+        double nLUU = (-currentRobotsPosition.getX()) * mLUU;
+        double nLLU = (-currentRobotsPosition.getX()) * mLLU;
+        double nLLD = (-currentRobotsPosition.getX()) * mLLD;
+        double nLDD = (-currentRobotsPosition.getX()) * mLDD;
+        double nRDD = (-currentRobotsPosition.getX()) * mRDD;
+        double nRRD = (-currentRobotsPosition.getX()) * mRRD;
 
         // set the distances
         double dRRU = 0;
@@ -297,67 +213,67 @@ public class Maze {
         double yRDD = mRDD * maxX + nRDD;
         double yRRD = mRRD * maxX + nRRD;
         for( Edges wall : environment) {
-            double RRU = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRRU), wall, false);
+            double RRU = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRRU), wall, false);
             if (RRU >= 0.0 && RRU <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RRU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yRRU - getCurrentRobotsPosition().getY()) * RRU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RRU;
+                double intersectionY = currentRobotsPosition.getY() + (yRRU - currentRobotsPosition.getY()) * RRU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRRU < distance)
                     dRRU = distance;
             }
-            double RUU = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRUU), wall, false);
+            double RUU = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRUU), wall, false);
             if (RUU >= 0.0 && RUU <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RUU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yRUU - getCurrentRobotsPosition().getY()) * RUU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RUU;
+                double intersectionY = currentRobotsPosition.getY() + (yRUU - currentRobotsPosition.getY()) * RUU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRUU < distance)
                     dRUU = distance;
             }
-            double LUU = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLUU), wall, false);
+            double LUU = calculateIntersection(currentRobotsPosition, new Coords(minX, yLUU), wall, false);
             if (LUU >= 0.0 && LUU <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LUU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LUU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LUU;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LUU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLUU < distance)
                     dLUU = distance;
             }
-            double LLU = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLLU), wall, false);
+            double LLU = calculateIntersection(currentRobotsPosition, new Coords(minX, yLLU), wall, false);
             if (LLU >= 0.0 && LLU <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LLU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LLU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LLU;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LLU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLLU < distance)
                     dLLU = distance;
             }
-            double LLD = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLLD), wall, false);
+            double LLD = calculateIntersection(currentRobotsPosition, new Coords(minX, yLLD), wall, false);
             if (LLD >= 0.0 && LLD <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LLD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LLD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LLD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LLD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLLD < distance)
                     dLLD = distance;
             }
-            double LDD = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLDD), wall, false);
+            double LDD = calculateIntersection(currentRobotsPosition, new Coords(minX, yLDD), wall, false);
             if (LDD >= 0.0 && LDD <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LDD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LDD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LDD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LDD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLDD < distance)
                     dLDD = distance;
             }
-            double RDD = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRDD), wall, false);
+            double RDD = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRDD), wall, false);
             if (RDD >= 0.0 && RDD <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RDD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * RDD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RDD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * RDD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRDD < distance)
                     dRDD = distance;
             }
-            double RRD = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRRD), wall, false);
+            double RRD = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRRD), wall, false);
             if (RRD >= 0.0 && RRD <= 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RRD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * RRD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RRD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * RRD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRRD < distance)
                     dRRD = distance;
             }
@@ -365,67 +281,67 @@ public class Maze {
 
 
         for( Edges ob : obstacle) {
-            double RRU = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRRU), ob, false);
+            double RRU = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRRU), ob, false);
             if (RRU > 0.0 && RRU < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RRU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yRRU - getCurrentRobotsPosition().getY()) * RRU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RRU;
+                double intersectionY = currentRobotsPosition.getY() + (yRRU - currentRobotsPosition.getY()) * RRU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRRU > distance)
                     dRRU = distance;
             }
-            double RUU = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRUU), ob, false);
+            double RUU = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRUU), ob, false);
             if (RUU > 0.0 && RUU < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RUU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yRUU - getCurrentRobotsPosition().getY()) * RUU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RUU;
+                double intersectionY = currentRobotsPosition.getY() + (yRUU - currentRobotsPosition.getY()) * RUU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRUU > distance)
                     dRUU= distance;
             }
-            double LUU = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLUU), ob, false);
+            double LUU = calculateIntersection(currentRobotsPosition, new Coords(minX, yLUU), ob, false);
             if (LUU > 0.0 && LUU < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LUU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LUU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LUU;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LUU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLUU > distance)
                     dLUU = distance;
             }
-            double LLU = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLLU), ob, false);
+            double LLU = calculateIntersection(currentRobotsPosition, new Coords(minX, yLLU), ob, false);
             if (LLU > 0.0 && LLU < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LLU;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LLU;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LLU;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LLU;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLLU > distance)
                     dLLU = distance;
             }
-            double LLD = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLLD), ob, false);
+            double LLD = calculateIntersection(currentRobotsPosition, new Coords(minX, yLLD), ob, false);
             if (LLD > 0.0 && LLD < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LLD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LLD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LLD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LLD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLLD > distance)
                     dLLD = distance;
             }
-            double LDD = calculateIntersection(getCurrentRobotsPosition(), new Coords(minX, yLDD), ob, false);
+            double LDD = calculateIntersection(currentRobotsPosition, new Coords(minX, yLDD), ob, false);
             if (LDD > 0.0 && LDD < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (minX - getCurrentRobotsPosition().getX()) * LDD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * LDD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (minX - currentRobotsPosition.getX()) * LDD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * LDD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dLDD > distance)
                     dLDD = distance;
             }
-            double RDD = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRDD), ob, false);
+            double RDD = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRDD), ob, false);
             if (RDD > 0.0 && RDD < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RDD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * RDD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RDD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * RDD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRDD > distance)
                     dRDD = distance;
             }
-            double RRD = calculateIntersection(getCurrentRobotsPosition(), new Coords(maxX, yRRD), ob, false);
+            double RRD = calculateIntersection(currentRobotsPosition, new Coords(maxX, yRRD), ob, false);
             if (RRD > 0.0 && RRD < 1.0) {
-                double intersectionX = getCurrentRobotsPosition().getX() + (maxX - getCurrentRobotsPosition().getX()) * RRD;
-                double intersectionY = getCurrentRobotsPosition().getY() + (yLUU - getCurrentRobotsPosition().getY()) * RRD;
-                double distance  = Math.sqrt(Math.pow(getCurrentRobotsPosition().getX() - intersectionX, 2.0) + Math.pow(getCurrentRobotsPosition().getY() - intersectionY, 2.0));
+                double intersectionX = currentRobotsPosition.getX() + (maxX - currentRobotsPosition.getX()) * RRD;
+                double intersectionY = currentRobotsPosition.getY() + (yLUU - currentRobotsPosition.getY()) * RRD;
+                double distance  = Math.sqrt(Math.pow(currentRobotsPosition.getX() - intersectionX, 2.0) + Math.pow(currentRobotsPosition.getY() - intersectionY, 2.0));
                 if(dRRD > distance)
                     dRRD = distance;
             }
@@ -443,9 +359,9 @@ public class Maze {
         sensors[9] = dD;
         sensors[10] = dRDD;
         sensors[11] = dRRD;
-        sensors[12] = getCurrentRobotsPosition().getX();
-        sensors[13] = getCurrentRobotsPosition().getY();
-        sensors[14] = getCurrentRobotsPosition().getAngle();
+        sensors[12] = currentRobotsPosition.getX();
+        sensors[13] = currentRobotsPosition.getY();
+        sensors[14] = currentRobotsPosition.getAngle();
 
     	return sensors;
     }
@@ -456,9 +372,5 @@ public class Maze {
     
     public Set<Edges> getObstacle() {
         return obstacle;
-    }
-
-    public Coords getCurrentRobotsPosition() {
-        return currentRobotsPosition;
     }
 }
