@@ -10,10 +10,12 @@ public class Robot {
 	double direction;
 	Maze maze;
 
-	public Robot(double x, double y) {
+	Robot(double x, double y, Maze maze) {
 		this.posX = x;
 		this.posY = y;
 		this.direction = 0;
+		this.maze = maze;
+		maze.updatePosition(x, y);
 	}
 
 	public void move(double[] velocity) {
@@ -42,17 +44,18 @@ public class Robot {
 	}
 
 	public double[] getSensorValues() {
-		double[] sensors = new double[15];
+//		double[] sensors = new double[15];
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
-		double[] tmp = maze.calculateSensorValues();
-		for (int i = 0; i < tmp.length; i++) {
-			sensors[i] = tmp[i];
-		}
-		sensors[12] = posX;
-		sensors[13] = posY;
-		sensors[14] = direction;
-		return sensors;
+//		double[] tmp = maze.calculateSensorValues();
+//		for (int i = 0; i < tmp.length; i++) {
+//			sensors[i] = tmp[i];
+//		}
+//		sensors[12] = posX;
+//		sensors[13] = posY;
+//		sensors[14] = direction;
+//		return sensors;
+		return maze.calculateSensorValuesTest();
 	}
 
 }

@@ -1,9 +1,11 @@
 public class Edges {
     private Coords from;
     private Coords to;
-    Edges(Coords from, Coords to) {
+    private String direction;
+    Edges(Coords from, Coords to, String direction) {
         this.from = from;
         this.to = to;
+        this.direction = direction;
     }
 
     Coords getFrom() {
@@ -12,6 +14,10 @@ public class Edges {
 
     Coords getTo() {
         return to;
+    }
+
+    String getDirection() {
+        return direction;
     }
     
     @Override
