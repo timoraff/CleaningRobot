@@ -26,10 +26,11 @@ class Visualizer extends JPanel {
 		frame.setVisible(true);
 	}
 	
-	public void drawEnvironment(Graphics g) {
+	private void drawEnvironment(Graphics g) {
 		
 		int maxX = 0;
 		int maxY = 0;
+
 		
 		for (Edges edge : maze.getEnvironment()) {
 			
@@ -43,20 +44,23 @@ class Visualizer extends JPanel {
 			if (Math.max(x1, x2) > maxX) {
 				maxX = Math.max(x1, x2);
 				frameWidth = maxX + (int)BORDER;
-				frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
-				frame.pack();
 
 			}
 			if (Math.max(y1, y2) > maxY) {
 				maxY = Math.max(y1, y2);
 				frameHeight = maxY + (int)BORDER;
-				frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
-				frame.pack();
 			}
 		}
+                
+        frame.setPreferredSize(new Dimension(frameWidth, frameHeight));
+		frame.pack();
 	}
+        
+    private void drawRobot(Graphics g) {
+            
+    }
 	
-	public void drawObstacles(Graphics g) {
+	private void drawObstacles(Graphics g) {
 		
 		for (Edges edge : maze.getObstacle()) {
 			
@@ -75,5 +79,6 @@ class Visualizer extends JPanel {
 		super.paintComponent(g);
 		drawEnvironment(g);
 		drawObstacles(g);
+        drawRobot(g);
 	}
 }
