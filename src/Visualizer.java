@@ -58,6 +58,8 @@ class Visualizer extends JPanel {
         
     private void drawRobot(Graphics g) {
             
+        Coords roboCoords = maze.getCurrentRobotsPosition();
+        g.drawRect((int)(roboCoords.getX()-SCALE/2.0), (int)(roboCoords.getY()-SCALE/2.0), (int)SCALE, (int)SCALE);
     }
 	
 	private void drawObstacles(Graphics g) {
