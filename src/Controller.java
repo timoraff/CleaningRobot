@@ -3,6 +3,7 @@ public class Controller {
 	private static final double mutationRate = 0.015;
 
 	public static Population evolveEvolution(Population pop) {
+		pop.test();
 		Population newPop = new Population(0);
 		SelectionStrategy selection = new TournamentSelection();
 
