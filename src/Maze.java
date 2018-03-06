@@ -122,7 +122,7 @@ public class Maze {
                     x = edge.getFrom().getX();
                     y = posY;
                 } else if (rayA == Integer.MAX_VALUE && edgeA == 0) {
-                    x = posY;
+                    x = posX;
                     y = edge.getFrom().getY();
                 } else if (rayA == 0) {
                     y = posY;
