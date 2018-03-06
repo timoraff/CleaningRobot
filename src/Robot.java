@@ -13,6 +13,9 @@ public class Robot {
 	Maze maze;
 	double fitness;
 	double lastMinSensorValue;
+	
+	//for fitness calculation:
+	boolean [][] grid;
 
 	Robot(double x, double y, Maze maze) {
 		this.posX = x;
@@ -20,8 +23,11 @@ public class Robot {
 		this.direction = 0;
 		this.maze = maze;
 		this.fitness = 0;
-		this.lastMaxSensorValue = 0;
+		this.lastMinSensorValue = 0;
 		maze.updatePosition(x, y);
+		//TODO maybe change the size of the grid;
+		grid =new boolean[500][500];
+		
 	}
 
 	public void move(double[] velocity) {
@@ -52,6 +58,8 @@ public class Robot {
 			// decrease fitnesfunction
 			fitness -= COLISIONDECREASE;
 		} else {
+			//alternative fitness function:
+			//updateFitness(x,y);
 			// calculate a fitnesupdate
 			// V= average of unsigned rotation
 			// deltaV= difference between the signed rotation
@@ -92,6 +100,14 @@ public class Robot {
 		sensors[14] = direction;
 		return sensors;
 		// return maze.calculateSensorValues();
+	}
+	
+	public void updateFitness(double x, double y) {
+		//take a look in the grid and see how much (%) is visited
+		//update the x and y coordinates to values fitting at the grid!??
+		//search activate the single parts in the grid --> so calcuöate a route.
+		//int xG
+		//maze.getMaxX()
 	}
 
 	public double getFitness() {

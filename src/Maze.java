@@ -4,6 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Maze {
+	public double getMaxX() {
+		return maxX;
+	}
+
+	public double getMaxY() {
+		return maxY;
+	}
+
 	private double minX, minY;
 	private double maxX, maxY;
 	private static Set<Edges> environment;
