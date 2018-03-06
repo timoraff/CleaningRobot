@@ -19,16 +19,16 @@ public class Maze {
         maxX = maxY = 30.0;
         environment = new HashSet<>();
         // wall
-        environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY), "N"));
-        environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY), "E"));
-        environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY), "S"));
-        environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY), "W"));
+        environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY), 1)); //bottom line
+        environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY), -1)); //top line
+        environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY), -1)); //right line
+        environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY), 1)); //left line
 
         // obstacle
-        environment.add(new Edges(new Coords(6.0, 6.0), new Coords(22.0, 6.0), "S"));
-        environment.add(new Edges(new Coords(22.0, 6.0), new Coords(22.0, 22.0), "W"));
-        environment.add(new Edges(new Coords(22.0, 22.0), new Coords(6.0, 22.0), "N"));
-        environment.add(new Edges(new Coords(6.0, 22.0), new Coords(6.0, 6.0), "E"));
+        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(maxX - 6, minY + 6), -1)); //bottom line
+        environment.add(new Edges(new Coords(maxX - 6, minY + 6), new Coords(maxX - 6, maxY - 6), -1)); //left line
+        environment.add(new Edges(new Coords(maxX - 6, maxY - 6), new Coords(minX + 6, maxY - 6), 1)); //top line
+        environment.add(new Edges(new Coords(minX + 6, maxY - 6), new Coords(minX + 6, minY + 6), 1)); //right line
 
         currentRobotsPosition = new Coords(minX, minY);
     }
@@ -40,8 +40,8 @@ public class Maze {
     }
 
     public Coords getCorrectPosition(Coords oldPos, Coords newPos) {
-
-        double angle = Math.atan2((-newPos.getY()) - (-oldPos.getY()), newPos.getX() - oldPos.getX());
+        Coords tmpPos = new Coords(newPos.getX(), newPos.getY());
+        double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
         double degrees = Math.toDegrees(angle);
         if (degrees < 0)
             degrees += 360;
@@ -50,69 +50,122 @@ public class Maze {
         newPos.setAngle(degrees);
 
         for (Edges wall : environment) {
-            calculateIntersection(oldPos, newPos, wall, true);
-        }
-//        for (Edges ob : obstacle) {
-//            calculateIntersection(oldPos, newPos, ob, true);
-//        }
-        currentRobotsPosition = newPos;
-        return newPos;
-    }
+            double wallFromX = wall.getFrom().getX() + wall.getShift();
+            double wallFromY = wall.getFrom().getY() + wall.getShift();
+            double wallToX = wall.getTo().getX() + wall.getShift();
+            double wallToY = wall.getTo().getY() + wall.getShift();
 
-    /**
-     * This function calculates the intersection between 2 lines
-     * @param robotFrom from coordinates of the robot
-     * @param robotTo to coordinates of the robot
-     * @param wall wall object (contains from and to as well)
-     * @param update indicate whether to update the robots position (true) or not (false)
-     *               false is used to calculate the distance to walls and obstacles
-     */
-    private double calculateIntersection(Coords robotFrom, Coords robotTo, Edges wall, boolean update) {
-        //Wall
-        double wallP1x = wall.getFrom().getX();
-        double wallP1y = wall.getFrom().getY();
-        double wallP2x = wall.getTo().getX();
-        double wallP2y = wall.getTo().getY();
-
-        //Robot movement
-        double robotP1x = robotFrom.getX();
-        double robotP1y = robotFrom.getY();
-        double robotP2x = robotTo.getX();
-        double robotP2y = robotTo.getY();
-
-        //calculations of intersection
-        double Ex = Math.abs(wallP2x - wallP1x); //deltaX of obstacle
-        double Ey = Math.abs(wallP2y - wallP1y); //deltaY of obstacle
-        double Fx = Math.abs(robotP2x - robotP1x); //deltaX of robot
-        double Fy = Math.abs(robotP2y - robotP1y); //deltaY of robot
-        double h = ((wallP1x - robotP1x) * (-Ey) + (wallP1y - robotP1y) * Ex) / (Fx * (-Ey) + Fy * Ex);
-
-        //if h is between 0 and 1, lines are intersecting
-        //if h is exact 0 or 1 the lines touch at an end point
-        //if h is smaller than 0, the line is behind the given line
-        //if h is bigger than 1 the line is in front of the given line
-        //if FxFy and PxPy are zero, the lines are parallel
-        if (update && h >= 0.0 && h <= 1.0) {
-            robotTo.setX(robotP1x + Fx * h);
-            robotTo.setY(robotP1y + Fy * h);
-            if (wallP1x == wallP2x) { //vertical line
-                if (robotP2x - robotP1x < 0 && robotP2y - robotP1y < 0) robotTo.setAngle(90);
-                else if (robotP2x - robotP1x < 0 && robotP2y - robotP1y > 0) robotTo.setAngle(270);
-                else if (robotP2x - robotP1x > 0 && robotP2y - robotP1y > 0) robotTo.setAngle(270);
-                else if (robotP2x - robotP1x > 0 && robotP2y - robotP1y < 0) robotTo.setAngle(90);
-                else if (robotP2y - robotP1y == 0 && robotP2y < maxY / 2) robotTo.setAngle(270);
-                else if (robotP2y - robotP1y == 0 && robotP2y > maxY / 2) robotTo.setAngle(90);
+            // ray
+            double A1;
+            double B1 = 0;
+            if (oldPos.getX() == newPos.getX()) {
+                A1 = Integer.MAX_VALUE;
+            } else if (oldPos.getY() == newPos.getY()) {
+                A1 = 0;
+            } else {
+                A1 = (newPos.getY() - oldPos.getY()) / (newPos.getX() - oldPos.getX());
+                B1 = oldPos.getY() - oldPos.getX() * A1;
             }
-            if (wallP1y == wallP2y) { //horizontal line
-                if (robotP2x - robotP1x < 0 && robotP2y - robotP1y < 0) robotTo.setAngle(180);
-                else if (robotP2x - robotP1x < 0 && robotP2y - robotP1y > 0) robotTo.setAngle(180);
-                else if (robotP2x - robotP1x > 0 && robotP2y - robotP1y > 0) robotTo.setAngle(0);
-                else if (robotP2x - robotP1x > 0 && robotP2y - robotP1y < 0) robotTo.setAngle(0);
-                else if (robotP2x - robotP1x == 0 && robotP2x < maxX / 2) robotTo.setAngle(0);
-                else if (robotP2x - robotP1x == 0 && robotP2x > maxX / 2) robotTo.setAngle(180);
+
+            // edge
+            double A2;
+            double B2 = 0;
+            if (wallToX == wallFromX) {
+                A2 = Integer.MAX_VALUE;
+            } else if (wallToY == wallFromY) {
+                A2 = 0;
+            } else {
+                A2 = (wallToY - wallFromY) / (wallToX - wallFromX);
+                B2 = wallFromY - wallFromX * A2;
+            }
+
+            // in case they are not parallel
+            if (A1 != A2) {
+                double x, y;
+                if (A2 == Integer.MAX_VALUE && A1 == 0) {
+                    x = wallFromX;
+                    y = oldPos.getY();
+                } else if (A1 == Integer.MAX_VALUE && A2 == 0) {
+                    x = oldPos.getX();
+                    y = wallFromY;
+                } else if (A1 == 0) {
+                    y = oldPos.getY();
+                    x = (y - B2) / A2;
+                } else if (A2 == 0) {
+                    y = wallFromY;
+                    x = (y - B1) / A1;
+                } else if (A1 == Integer.MAX_VALUE) {
+                    x = oldPos.getX();
+                    y = x*A2 + B2;
+                } else if (A2 == Integer.MAX_VALUE) {
+                    x = wallFromX;
+                    y = x*A1 + B1;
+                } else {
+                    x = (B2 - B1) / (A1 - A2);
+                    y = A1 * x + B1;
+                }
+
+                double minX = Math.min(wallFromX, wallToX);
+                double maxX = Math.max(wallFromX, wallToX);
+                double minY = Math.min(wallFromY, wallToY);
+                double maxY = Math.min(wallFromY, wallToY);
+                if(minX <= x && x <= maxX && minY <= y && y <= maxY) {
+                    if (0.0 < degrees && 90.0 > degrees) {
+                        if (x > oldPos.getX() && y > oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+                    } else if (90.0 < degrees && 180.0 > degrees) {
+                        if (x < oldPos.getX() && y > oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+
+                    } else if (180.0 < degrees && 270.0 > degrees) {
+                        if (x < oldPos.getX() && y < oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+
+                    } else if (270.0 < degrees && 360.0 > degrees) {
+                        if (x > oldPos.getX() && y < oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+
+                    } else if(degrees == 0) {
+                        if (x > oldPos.getX() && y == oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+                    } else if(degrees == 90) {
+                        if (x == oldPos.getX() && y > oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+                    } else if(degrees == 180) {
+                        if (x < oldPos.getX() && y == oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+                    } else {
+                        if (x == oldPos.getX() && y < oldPos.getY()) {
+                            tmpPos.setX(x);
+                            tmpPos.setY(y);
+                            break;
+                        }
+                    }
+                }
             }
         }
-        return h;
+        return tmpPos;
     }
 
     public static double[] calculateSensorValues() {
@@ -184,10 +237,6 @@ public class Maze {
                     double maxY = Math.min(wall.getFrom().getY(), wall.getTo().getY());
                     if(minX <= x && x <= maxX && minY <= y && y <= maxY) {
                         double distance = Math.sqrt(Math.pow(x - RX, 2) + Math.pow(y - RY, 2));
-                        if (degrees[i] == 60) {
-                            System.out.println("dis: " + distance + " x: " + x + " y: " + y);
-                        }
-
                         if (0.0 < degrees[i] && 90.0 > degrees[i]) {
                             if (x > RX && y > RY) {
                                 sensors[i] = Math.min(sensors[i], distance);
