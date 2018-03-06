@@ -61,7 +61,7 @@ public class Maze {
 
         double percent = 10;
         for (double distance : sensors) {
-            if (distance != Integer.MAX_VALUE) {
+//            if (distance != Integer.MAX_VALUE) {
                 double rand = Math.random();
                 double noisyDistance;
                 if (rand < 0.5) {
@@ -69,8 +69,8 @@ public class Maze {
                 } else {
                     noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
                 }
-                System.out.println(distance + " " + noisyDistance + " " + rand);
-            }
+                System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
+//            }
         }
 
         return sensors;
