@@ -45,12 +45,32 @@ public class Maze {
     public double[] calculateSensorValues(Coords currentPosition) {
         double sensors[]= new double[12];
         double[] degrees = {0,30,60,90,120,150,180,210,240,270,300,330};
-        for(int i = 0; i < degrees.length; i++) {
-            sensors[i] = Double.MAX_VALUE;
-        }
+//        for(int i = 0; i < degrees.length; i++) {
+//            sensors[i] = Double.MAX_VALUE;
+//        }
 
         for(int i = 0; i < degrees.length; i++) {
             sensors[i] = castRay(currentPosition, degrees[i]);
+        }
+
+        double maxDistance = 0;
+        for (double distance : sensors) {
+            if(distance != Integer.MAX_VALUE)
+                maxDistance = Math.max(distance, maxDistance);
+        }
+
+        double percent = 10;
+        for (double distance : sensors) {
+            if (distance != Integer.MAX_VALUE) {
+                double rand = Math.random();
+                double noisyDistance;
+                if (rand < 0.5) {
+                    noisyDistance = distance - distance * (distance/maxDistance) * percent/100 * rand;
+                } else {
+                    noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
+                }
+                System.out.println(distance + " " + noisyDistance + " " + rand);
+            }
         }
 
         return sensors;
