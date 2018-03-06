@@ -6,13 +6,15 @@ class Visualizer extends JPanel {
 	private static final double BORDER = 100.0;
 	private static final double SCALE = 15.0;
 	private Maze maze;
+        private Robot robot;
         private int frameWidth;
         private int frameHeight;
 	private JFrame frame;
 	
-	public Visualizer(Maze maze) {
+	public Visualizer(Maze maze, Robot robot) {
 		
 		this.maze = maze;
+                this.robot = robot;
 		createFrame();
 	}
 	
@@ -73,7 +75,8 @@ class Visualizer extends JPanel {
             
         Coords roboCoords = maze.getCurrentRobotsPosition();
         g.setColor(Color.RED);
-        g.fillRect((int)(BORDER+roboCoords.getX()*SCALE-SCALE), (int)(BORDER+roboCoords.getY()*SCALE-SCALE), (int)SCALE, (int)SCALE);
+        int l = robot.getL();
+        g.fillOval((int)(BORDER+(roboCoords.getX()+l/2.0)*SCALE-l*SCALE), (int)(BORDER+(roboCoords.getY()+l/2.0)*SCALE-l*SCALE), (int)(l*SCALE), (int)(l*SCALE));
     }
 	
     @Override

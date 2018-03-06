@@ -57,5 +57,9 @@ public class Robot {
 //		return sensors;
 		return maze.calculateSensorValues();
 	}
+        
+        public int getL() {
+            return l;
+        }
 
 }

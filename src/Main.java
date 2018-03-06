@@ -9,8 +9,9 @@ public class Main {
 	public static void main(String[] args) {
 		// how to get the correct position for the robot
 		Maze maze = new Maze();
-		Visualizer visualizer = new Visualizer(maze);
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
+                Visualizer visualizer = new Visualizer(maze, robo);
+
 
 		/*
 		 * init a new population with size STARTINGPOP evolve this population for a
