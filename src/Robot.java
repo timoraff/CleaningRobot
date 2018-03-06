@@ -13,6 +13,7 @@ public class Robot {
 	Maze maze;
 	double fitness;
 	double lastMinSensorValue;
+        Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
 		this.posX = x;
@@ -101,5 +102,9 @@ public class Robot {
 	public int getL() {
 		return l;
 	}
+        
+        public void setVisualizer(Visualizer visulizer) {
+            this.visualizer = visulizer;
+        }
 
 }

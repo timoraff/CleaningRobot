@@ -93,4 +93,8 @@ class Visualizer extends JPanel {
             drawEnvironment(g);
             drawRobot(g);
     }
+    
+    public void update() {
+        repaint();
+    }
 }
