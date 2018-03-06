@@ -128,4 +128,7 @@ public class Robot {
 		this.visualizer = visualizer;
 	}
 
+    public Coords getCurrentPosition() {
+        return currentPosition;
+    }
 }
