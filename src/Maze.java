@@ -164,7 +164,7 @@ public class Maze {
                 double minX = Math.min(edge.getFrom().getX(), edge.getTo().getX());
                 double maxX = Math.max(edge.getFrom().getX(), edge.getTo().getX());
                 double minY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
-                double maxY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                double maxY = Math.max(edge.getFrom().getY(), edge.getTo().getY());
                 
                 if (minX <= x && x <= maxX && minY <= y && y <= maxY) {
                     double distance = Math.sqrt(Math.pow(x - posX, 2) + Math.pow(y - posY, 2));
