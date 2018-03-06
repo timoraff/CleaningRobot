@@ -1,7 +1,7 @@
 
 public class Main {
 	final static int ITERATIONS = 100;
-	final static int STARTINGPOP = 50;
+	final static int STARTINGPOP = 80;
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
 
@@ -10,13 +10,14 @@ public class Main {
 		// how to get the correct position for the robot
 		Maze maze = new Maze();
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
-                Visualizer visualizer = new Visualizer(maze, robo);
-
+		Visualizer visualizer = new Visualizer(maze, robo);
+                robo.setVisualizer(visualizer);
 
 		/*
 		 * init a new population with size STARTINGPOP evolve this population for a
 		 * number of "ITERATIONS" iterations
 		 */
+		/*
 		Population pop = new Population(STARTINGPOP);
 		for (int i = 0; i < ITERATIONS; i++) {
 			System.out.println("Evo No: " + i + 1);
@@ -28,7 +29,7 @@ public class Main {
 		for (int i = 0; i < 200; i++) {
 			robo.move(fittest.calculate(robo.getSensorValues()));
 		}
-
+*/
 		Coords from = new Coords(2.0, 2.0);
 		Coords to = new Coords(2.0, -2.0);
 		Coords pos = maze.getCorrectPosition(from, to);

@@ -105,4 +105,16 @@ public class NeuralNet {
 	public double getFitness() {
 		return fitness;
 	}
+
+	public void test() {
+		// Maze m = new Maze();
+		// TODO starting pos of robot ?;
+		Robot r = new Robot(2, 2, new Maze());
+		// play for some steps
+		for (int i = 0; i < 100; i++) {
+			r.move(calculate(r.getSensorValues()));
+			// either add fitness calculation in here or in the robot class?
+		}
+		fitness = r.getFitness();
+	}
 }

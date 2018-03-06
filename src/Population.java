@@ -10,7 +10,13 @@ public class Population {
 
 	public void initPopulation(int count) {
 		for (int i = 0; i < count; i++) {
-			pop.add(new NeuralNet(true));// TODO wrong place for layer size
+			pop.add(new NeuralNet(true));
+		}
+	}
+
+	public void test() {
+		for (NeuralNet nn : pop) {
+			nn.test();
 		}
 	}
 
