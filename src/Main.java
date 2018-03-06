@@ -31,26 +31,23 @@ public class Main {
 		}
 */
 		Coords from = new Coords(2.0, 2.0);
-		Coords to = new Coords(2.0, -2.0);
-		Coords pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+		Coords to = new Coords(4.0, 4.0);
+		boolean pos = maze.getCorrectPosition(from, to);
+        System.out.println(pos);
 
-		from.setX(2.0);
-		from.setY(2.0);
+		from.setX(4.0);
+		from.setY(4.0);
 		to.setX(2.0);
-		to.setY(4.0);
-		pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+		to.setY(2.0);
+        pos = maze.getCorrectPosition(from, to);
+        System.out.println(pos);
 
 		from.setX(2.0);
 		from.setY(2.0);
 		to.setX(4.0);
 		to.setY(7.0);
-		pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+        pos = maze.getCorrectPosition(from, to);
+        System.out.println(pos);
 	}
 
 }

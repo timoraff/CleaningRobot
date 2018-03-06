@@ -19,6 +19,7 @@ public class Robot {
 	    currentPosition = new Coords(x, y);
 	    currentPosition.setAngle(0);
 		this.maze = maze;
+		maze.setLength(l);
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
 		// TODO maybe change the size of the grid;
