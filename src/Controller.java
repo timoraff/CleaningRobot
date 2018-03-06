@@ -4,6 +4,7 @@ public class Controller {
 
 	public static Population evolveEvolution(Population pop) {
 		pop.test();
+		System.out.println("max fitness: " + pop.getFittest().getFitness());
 		Population newPop = new Population(0);
 		SelectionStrategy selection = new TournamentSelection();
 

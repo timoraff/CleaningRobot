@@ -115,6 +115,6 @@ public class NeuralNet {
 			r.move(calculate(r.getSensorValues()));
 			// either add fitness calculation in here or in the robot class?
 		}
-		fitness = 0;
+		fitness = r.getFitness();
 	}
 }
