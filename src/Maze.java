@@ -431,7 +431,116 @@ public class Maze {
         this.l = l;
     }
 
-//    public Coords getCurrentRobotsPosition() {
-//        return currentRobotsPosition;
-//    }
+    public double castRay(Coords pos, double angle) {
+            
+        if (angle < 0) {
+            ange = (-angle) % 360;
+        } else {
+            angle = angle % 360;
+        }
+
+        double posX = pos.getX();
+        double posY = pos.getY();
+        
+        double minDistance = Integer.MAX_VALUE;
+        
+        for (Edges edge : environment) {
+
+            // ray
+            double rayA;
+            double rayB = 0;
+            if (angle == 90 || angle == 270) {
+                rayA = Integer.MAX_VALUE;
+            } else if (angle == 180 || angle == 0) {
+                rayA = 0;
+            } else {
+                rayA = Math.tan(Math.toRadians(angle));
+                rayB = posY - posX * rayA;
+            }
+            // edge
+            double edgeA;
+            double edgeB = 0;
+            if (edge.getTo().getX() == edge.getFrom().getX()) {
+                edgeA = Integer.MAX_VALUE;
+            } else if (edge.getTo().getY() == edge.getFrom().getY()) {
+                edgeA = 0;
+            } else {
+                edgeA = (edge.getTo().getY() - edge.getFrom().getY()) / (edge.getTo().getX() - edge.getFrom().getX());
+                edgeB = edge.getFrom().getY() - edge.getFrom().getX() * edgeA;
+            }
+            // in case they are not parralel
+            if (rayA != edgeA) {
+                double x, y;
+                if (edgeA == Integer.MAX_VALUE && rayA == 0) {
+                    x = edge.getFrom().getX();
+                    y = posY;
+                } else if (rayA == Integer.MAX_VALUE && edgeA == 0) {
+                    x = posY;
+                    y = edge.getFrom().getY();
+                } else if (rayA == 0) {
+                    y = posY;
+                    x = (y - edgeB) / edgeA;
+                } else if (edgeA == 0) {
+                    y = edge.getFrom().getY();
+                    x = (y - rayB) / rayA;
+                } else if (rayA == Integer.MAX_VALUE) {
+                    x = posX;
+                    y = x * edgeA + edgeB;
+                } else if (edgeA == Integer.MAX_VALUE) {
+                    x = edge.getFrom().getX();
+                    y = x * rayA + rayB;
+                } else {
+                    x = (edgeB - rayB) / (rayA - edgeA);
+                    y = rayA * x + rayB;
+                }
+
+                double minX = Math.min(edge.getFrom().getX(), edge.getTo().getX());
+                double maxX = Math.max(edge.getFrom().getX(), edge.getTo().getX());
+                double minY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                double maxY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                
+                if (minX <= x && x <= maxX && minY <= y && y <= maxY) {
+                    double distance = Math.sqrt(Math.pow(x - posX, 2) + Math.pow(y - posY, 2));
+                    if (0.0 < angle && 90.0 > angle) {
+                        if (x > posX && y > posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (90.0 < angle && 180.0 > angle) {
+                        if (x < posX && y > posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (180.0 < angle && 270.0 > angle) {
+                        if (x < posX && y < posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (270.0 < angle && 360.0 > angle) {
+                        if (x > posX && y < posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (angle == 0) {
+                        if (x > posX && y == posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (angle == 90) {
+                        if (x == posX && y > posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (angle == 180) {
+                        if (x < posX && y == posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    } else if (angle == 270) {
+                        if (x == posX && y < posY) {
+                            minDistance = Math.min(minDistance, distance);
+                        }
+                    }
+                }
+            }
+            if (minDistance == Integer.MAX_VALUE) {
+                return null;
+            } else {
+                return minDistance;
+            }
+        }
+    }
 }
