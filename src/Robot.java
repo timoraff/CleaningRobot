@@ -5,26 +5,22 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	final static int COLISIONDECREASE = 2;
-	int l = 2; // distance between the 2 wheels
-	double posX; // Coordinates in the maze
-	double posY;
-	double direction;
-	Maze maze;
-	double fitness;
-	double lastMinSensorValue;
+	private final static int COLISIONDECREASE = 2;
+	private int l = 2; // distance between the 2 wheels
+    private Coords currentPosition;
+	private Maze maze;
+	private double fitness;
+	private double lastMinSensorValue;
 	// for fitness calculation:
-	boolean[][] grid;
-	Visualizer visulizer;
+    private boolean[][] grid;
+	private Visualizer visualizer;
 
 	Robot(double x, double y, Maze maze) {
-		this.posX = x;
-		this.posY = y;
-		this.direction = 0;
+	    currentPosition = new Coords(x, y);
+	    currentPosition.setAngle(0);
 		this.maze = maze;
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
-		maze.updatePosition(x, y);
 		// TODO maybe change the size of the grid;
 		grid = new boolean[500][500];
 
@@ -35,9 +31,9 @@ public class Robot {
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
-		double x = posX;
-		double y = posY;
-		double theta = direction;
+		double x = currentPosition.getX();
+		double y = currentPosition.getY();
+		double theta = currentPosition.getAngle();
 		double deltat = 0.3;
 		double w;
 		double r;
@@ -64,7 +60,7 @@ public class Robot {
 		}
 		
 
-		boolean colision = maze.updatePosition(x, y);
+		boolean colision = maze.getCorrectPosition(currentPosition, new Coords(newx, newy));
 		if (colision) {
 			// decrease fitnesfunction
 			fitness -= COLISIONDECREASE;
@@ -86,38 +82,36 @@ public class Robot {
 
 			}
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			posX = x;
-			posY = y;
-			direction = theta;
+			currentPosition.setY(newx);
+			currentPosition.setY(newy);
+			currentPosition.setAngle(theta);
+//			direction = theta;
 			// direction has to be update too
 		}
 	}
 
 	public double[] getSensorValues() {
-		double[] sensors = maze.calculateSensorValues();
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
-		// double[] tmp = maze.calculateSensorValues();
-		// for (int i = 0; i < tmp.length; i++) {
-		// sensors[i] = tmp[i];
-		// }
+        double[] sensors = new double[15];
+        double[] tmp = maze.calculateSensorValues(currentPosition);
+        System.arraycopy(tmp, 0, sensors, 0, tmp.length);
 		lastMinSensorValue = sensors[0];
 		for (int i = 1; i < sensors.length; i++) {
 			if (sensors[i] < lastMinSensorValue) {
 				lastMinSensorValue = sensors[i];
 			}
 		}
-		sensors[12] = posX;
-		sensors[13] = posY;
-		sensors[14] = direction;
+		sensors[12] = currentPosition.getX();
+		sensors[13] = currentPosition.getY();
+		sensors[14] = currentPosition.getAngle();
 		return sensors;
-		// return maze.calculateSensorValues();
 	}
 
 	public void updateFitness(double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
-		// search activate the single parts in the grid --> so calcuöate a route.
+		// search activate the single parts in the grid --> so calcuï¿½ate a route.
 		// int xG
 		// maze.getMaxX()
 	}
@@ -130,8 +124,8 @@ public class Robot {
 		return l;
 	}
 
-	public void setVisualizer(Visualizer visulizer) {
-		this.visualizer = visulizer;
+	public void setVisualizer(Visualizer visualizer) {
+		this.visualizer = visualizer;
 	}
 
 }
