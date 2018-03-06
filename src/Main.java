@@ -11,6 +11,7 @@ public class Main {
 		Maze maze = new Maze();
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
 		Visualizer visualizer = new Visualizer(maze, robo);
+                robo.setVisualizer(visualizer);
 
 		/*
 		 * init a new population with size STARTINGPOP evolve this population for a

@@ -13,9 +13,9 @@ public class Robot {
 	Maze maze;
 	double fitness;
 	double lastMinSensorValue;
-	
-	//for fitness calculation:
-	boolean [][] grid;
+	// for fitness calculation:
+	boolean[][] grid;
+	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
 		this.posX = x;
@@ -25,9 +25,9 @@ public class Robot {
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
 		maze.updatePosition(x, y);
-		//TODO maybe change the size of the grid;
-		grid =new boolean[500][500];
-		
+		// TODO maybe change the size of the grid;
+		grid = new boolean[500][500];
+
 	}
 
 	public void move(double[] velocity) {
@@ -58,8 +58,8 @@ public class Robot {
 			// decrease fitnesfunction
 			fitness -= COLISIONDECREASE;
 		} else {
-			//alternative fitness function:
-			//updateFitness(x,y);
+			// alternative fitness function:
+			// updateFitness(x,y);
 			// calculate a fitnesupdate
 			// V= average of unsigned rotation
 			// deltaV= difference between the signed rotation
@@ -69,10 +69,10 @@ public class Robot {
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i =1;
-			if(lastMinSensorValue<6) {
-				i = lastMinSensorValue/6.;
-				
+			double i = 1;
+			if (lastMinSensorValue < 6) {
+				i = lastMinSensorValue / 6.;
+
 			}
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
 			posX = x;
@@ -101,13 +101,13 @@ public class Robot {
 		return sensors;
 		// return maze.calculateSensorValues();
 	}
-	
+
 	public void updateFitness(double x, double y) {
-		//take a look in the grid and see how much (%) is visited
-		//update the x and y coordinates to values fitting at the grid!??
-		//search activate the single parts in the grid --> so calcuöate a route.
-		//int xG
-		//maze.getMaxX()
+		// take a look in the grid and see how much (%) is visited
+		// update the x and y coordinates to values fitting at the grid!??
+		// search activate the single parts in the grid --> so calcuöate a route.
+		// int xG
+		// maze.getMaxX()
 	}
 
 	public double getFitness() {
@@ -116,6 +116,10 @@ public class Robot {
 
 	public int getL() {
 		return l;
+	}
+
+	public void setVisualizer(Visualizer visulizer) {
+		this.visualizer = visulizer;
 	}
 
 }
