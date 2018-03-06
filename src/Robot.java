@@ -35,23 +35,34 @@ public class Robot {
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
-		double x = 0;
-		double y = 0;
-		double theta = 0.2;
-		double deltat = 0.1;
+		double x = posX;
+		double y = posY;
+		double theta = direction;
+		double deltat = 0.3;
 		double w;
 		double r;
 		double iccX;
 		double iccY;
+		double newx = 0;
+		double newy =0;
+		double newtheta = 0;
 		if (vR == vL) {
+			x = x + Math.cos(theta)*vR*deltat;
+			y = y + Math.sin(theta)*vR*deltat;
 			// just move forward;
 		} else {
 			r = (l / 2) * ((vL + vR) / (vR - vL));
-			w = (vR - vL) / l;
-			iccX = x - r * Math.sin(theta);
-			iccY = y + r * Math.cos(theta);
-
+			w = (vR - vL) / l; //evtl problem mit Rad und Deg?
+			iccX = x - r * Math.sin(Math.toRadians(theta));
+			iccY = y + r * Math.cos(Math.toRadians(theta));
+			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w*deltat)*(y-iccY)) + iccX;
+			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w*deltat)*(y-iccY)) + iccY;
+			newtheta = theta + w*deltat;
+			x = newx;
+			y = newy;
+			theta= newtheta;
 		}
+		
 
 		boolean colision = maze.updatePosition(x, y);
 		if (colision) {
@@ -77,6 +88,7 @@ public class Robot {
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
 			posX = x;
 			posY = y;
+			direction = theta;
 			// direction has to be update too
 		}
 	}
