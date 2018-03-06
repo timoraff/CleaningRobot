@@ -39,9 +39,7 @@ public class Maze {
         Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
         Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
         double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-        if (distance > castRay(posLeft, degrees) || distance > castRay(posRight, degrees))
-            return false;
-        return true;
+        return !(distance > castRay(posLeft, degrees)) && !(distance > castRay(posRight, degrees));
     }
 
     public double[] calculateSensorValues(Coords currentPosition) {
