@@ -28,6 +28,13 @@ public class Maze {
         environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(minX + 6, maxY - 6))); //left line
     }
 
+    /**
+     * check for collisions
+     * @param oldPos old position of the robot
+     * @param newPos new position of the robot
+     * @return  true if collision is detected,
+     *          false if no collision is detected
+     */
     public boolean checkForCollision(Coords oldPos, Coords newPos) {
         double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
         double degrees = Math.toDegrees(angle);
@@ -39,7 +46,7 @@ public class Maze {
         Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
         Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
         double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-        return !(distance > castRay(posLeft, degrees)) && !(distance > castRay(posRight, degrees));
+        return !(distance == castRay(posLeft, degrees)) || !(distance == castRay(posRight, degrees));
     }
 
     public double[] calculateSensorValues(Coords currentPosition) {
