@@ -16,19 +16,19 @@ public class Maze {
         double maxX = maxY = 30.0;
         environment = new HashSet<>();
         // wall
-        environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY), 1)); //bottom line
-        environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY), -1)); //top line
-        environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY), -1)); //right line
-        environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY), 1)); //left line
+        environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY))); //bottom line
+        environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY))); //top line
+        environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY))); //right line
+        environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY))); //left line
 
         // obstacle
-        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(maxX - 6, minY + 6), -1)); //bottom line
-        environment.add(new Edges(new Coords(maxX - 6, minY + 6), new Coords(maxX - 6, maxY - 6), 1)); //left line
-        environment.add(new Edges(new Coords(maxX - 6, maxY - 6), new Coords(minX + 6, maxY - 6), 1)); //top line
-        environment.add(new Edges(new Coords(minX + 6, maxY - 6), new Coords(minX + 6, minY + 6), -1)); //right line
+        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(maxX - 6, minY + 6))); //bottom line
+        environment.add(new Edges(new Coords(maxX - 6, minY + 6), new Coords(maxX - 6, maxY - 6))); //right line
+        environment.add(new Edges(new Coords(maxX - 6, maxY - 6), new Coords(minX + 6, maxY - 6))); //top line
+        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(minX + 6, maxY - 6))); //left line
     }
 
-    public boolean getCorrectPosition(Coords oldPos, Coords newPos) {
+    public boolean checkForCollision(Coords oldPos, Coords newPos) {
         double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
         double degrees = Math.toDegrees(angle);
         if (degrees < 0)
