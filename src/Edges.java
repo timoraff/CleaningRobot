@@ -1,11 +1,9 @@
 public class Edges {
     private Coords from;
     private Coords to;
-    private double shift;
-    Edges(Coords from, Coords to, double shift) {
+    Edges(Coords from, Coords to) {
         this.from = from;
         this.to = to;
-        this.shift = shift;
     }
 
     Coords getFrom() {
@@ -16,10 +14,6 @@ public class Edges {
         return to;
     }
 
-    double getShift() {
-        return shift;
-    }
-    
     @Override
     public String toString() {
         return "[" + from.toString() + ", " + to.toString() + "]";
