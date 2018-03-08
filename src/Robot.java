@@ -15,6 +15,7 @@ public class Robot {
 	double lastMinSensorValue;
 	// for fitness calculation:
 	boolean[][] grid;
+	final static int GRIDSIZE = 500;
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
@@ -25,8 +26,8 @@ public class Robot {
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
 		maze.updatePosition(x, y);
-		// TODO maybe change the size of the grid;
-		grid = new boolean[500][500];
+
+		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
 	}
 
@@ -59,7 +60,7 @@ public class Robot {
 			fitness -= COLISIONDECREASE;
 		} else {
 			// alternative fitness function:
-			// updateFitness(x,y);
+			// updateFitness(x,y); -> maybe also old x and y
 			// calculate a fitnesupdate
 			// V= average of unsigned rotation
 			// deltaV= difference between the signed rotation
@@ -102,10 +103,17 @@ public class Robot {
 		// return maze.calculateSensorValues();
 	}
 
-	public void updateFitness(double x, double y) {
+	public void updateFitness(double oldX, double oldY, double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
 		// search activate the single parts in the grid --> so calcuöate a route.
+		// mapping of position:
+		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
+		double height = GRIDSIZE / maze.getMaxY();
+		double fromX = oldX * width;
+		double fromY = oldY * height;
+		double toX = x * width;
+		double toY = y * height;
 		// int xG
 		// maze.getMaxX()
 	}
