@@ -61,8 +61,9 @@ public class Robot {
 			theta = newtheta;
 		}
 
-		//TODO maybe change back to boolean return  or already update position and find a way to realize if there was a collision.
-		boolean colision = currentPosition == maze.getCorrectPosition(currentPosition, new Coords(newx, newy));
+		// TODO maybe change back to boolean return or already update position and find
+		// a way to realize if there was a collision.
+		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy));
 
 		if (colision) {
 			// decrease fitnesfunction
@@ -97,7 +98,7 @@ public class Robot {
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
 		double[] sensors = new double[15];
-		double[] tmp = maze.calculateSensorValues();
+		double[] tmp = maze.calculateSensorValues(currentPosition);
 		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
 		lastMinSensorValue = sensors[0];
 		for (int i = 1; i < sensors.length; i++) {

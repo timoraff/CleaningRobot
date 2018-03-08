@@ -4,6 +4,8 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private int l = 0;
+    double maxY;
+    double maxX;
 
     /**
      * contains the coordinate system, including the walls
@@ -76,7 +78,7 @@ public class Maze {
                 } else {
                     noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
                 }
-                System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
+                //System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
 //            }
         }
 
@@ -213,4 +215,13 @@ public class Maze {
         }
         return minDistance;
     }
+
+	public double getMaxY() {
+		return maxY;
+	}
+
+	public double getMaxX() {
+		return maxX;
+	}
+    
 }

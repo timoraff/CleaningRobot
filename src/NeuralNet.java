@@ -31,8 +31,8 @@ public class NeuralNet {
 		for (int i = 0; i < NETWORKSIZE; i++) {
 			this.output[i] = new double[LAYERSIZES[i]];
 			this.bias[i] = new double[LAYERSIZES[i]];
-			this.weights[i] = new double[LAYERSIZES[i]][LAYERSIZES[i - 1]];
 			if (i > 0 && initWeights) {
+				this.weights[i] = new double[LAYERSIZES[i]][LAYERSIZES[i - 1]];
 				// init weights randomly
 				for (int j = 0; j < LAYERSIZES[i]; j++) {
 					for (int k = 0; k < LAYERSIZES[i - 1]; k++) {
