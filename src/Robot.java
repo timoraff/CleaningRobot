@@ -5,27 +5,24 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	final static int COLISIONDECREASE = 2;
-	int l = 2; // distance between the 2 wheels
-	double posX; // Coordinates in the maze
-	double posY;
-	double direction;
-	Maze maze;
-	double fitness;
-	double lastMinSensorValue;
+	private final static int COLISIONDECREASE = 2;
+	private int l = 2; // distance between the 2 wheels
+	private Coords currentPosition;
+	private Maze maze;
+	private double fitness;
+	private double lastMinSensorValue;
 	// for fitness calculation:
 	boolean[][] grid;
 	final static int GRIDSIZE = 500;
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
-		this.posX = x;
-		this.posY = y;
-		this.direction = 0;
+		currentPosition = new Coords(x, y);
+		currentPosition.setAngle(0);
 		this.maze = maze;
+		maze.setLength(l);
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
-		maze.updatePosition(x, y);
 
 		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
@@ -36,25 +33,37 @@ public class Robot {
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
-		double x = 0;
-		double y = 0;
-		double theta = 0.2;
-		double deltat = 0.1;
+		double x = currentPosition.getX();
+		double y = currentPosition.getY();
+		double theta = currentPosition.getAngle();
+		double deltat = 0.3;
 		double w;
 		double r;
 		double iccX;
 		double iccY;
+		double newx = 0;
+		double newy = 0;
+		double newtheta = 0;
 		if (vR == vL) {
+			x = x + Math.cos(theta) * vR * deltat;
+			y = y + Math.sin(theta) * vR * deltat;
 			// just move forward;
 		} else {
 			r = (l / 2) * ((vL + vR) / (vR - vL));
-			w = (vR - vL) / l;
-			iccX = x - r * Math.sin(theta);
-			iccY = y + r * Math.cos(theta);
-
+			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
+			iccX = x - r * Math.sin(Math.toRadians(theta));
+			iccY = y + r * Math.cos(Math.toRadians(theta));
+			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
+			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+			newtheta = theta + w * deltat;
+			x = newx;
+			y = newy;
+			theta = newtheta;
 		}
 
-		boolean colision = maze.updatePosition(x, y);
+		//TODO maybe change back to boolean return  or already update position and find a way to realize if there was a collision.
+		boolean colision = currentPosition == maze.getCorrectPosition(currentPosition, new Coords(newx, newy));
+
 		if (colision) {
 			// decrease fitnesfunction
 			fitness -= COLISIONDECREASE;
@@ -76,31 +85,30 @@ public class Robot {
 
 			}
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			posX = x;
-			posY = y;
+			currentPosition.setY(newx);
+			currentPosition.setY(newy);
+			currentPosition.setAngle(theta);
+			// direction = theta;
 			// direction has to be update too
 		}
 	}
 
 	public double[] getSensorValues() {
-		double[] sensors = maze.calculateSensorValues();
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
-		// double[] tmp = maze.calculateSensorValues();
-		// for (int i = 0; i < tmp.length; i++) {
-		// sensors[i] = tmp[i];
-		// }
+		double[] sensors = new double[15];
+		double[] tmp = maze.calculateSensorValues();
+		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
 		lastMinSensorValue = sensors[0];
 		for (int i = 1; i < sensors.length; i++) {
 			if (sensors[i] < lastMinSensorValue) {
 				lastMinSensorValue = sensors[i];
 			}
 		}
-		sensors[12] = posX;
-		sensors[13] = posY;
-		sensors[14] = direction;
+		sensors[12] = currentPosition.getX();
+		sensors[13] = currentPosition.getY();
+		sensors[14] = currentPosition.getAngle();
 		return sensors;
-		// return maze.calculateSensorValues();
 	}
 
 	public void updateFitness(double oldX, double oldY, double x, double y) {
@@ -127,7 +135,10 @@ public class Robot {
 	}
 
 	public void setVisualizer(Visualizer visulizer) {
-		this.visualizer = visulizer;
+		this.visulizer = visulizer;
 	}
 
+	public Coords getCurrentPosition() {
+		return currentPosition;
+	}
 }
