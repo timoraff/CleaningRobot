@@ -73,7 +73,7 @@ class Visualizer extends JPanel {
         
     private void drawRobot(Graphics g) {
             
-        Coords roboCoords = new Coords(robot.getCurrentPosition().getX(), robot.getCurrentPosition().getY());
+        Coords roboCoords = maze.getCurrentRobotsPosition();
         g.setColor(Color.RED);
         int l = robot.getL();
         g.fillOval((int)(BORDER+(roboCoords.getX()+l/2.0)*SCALE-l*SCALE), (int)(BORDER+(roboCoords.getY()+l/2.0)*SCALE-l*SCALE), (int)(l*SCALE), (int)(l*SCALE));

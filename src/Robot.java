@@ -7,23 +7,24 @@ public class Robot {
 
 	private final static int COLISIONDECREASE = 2;
 	private int l = 2; // distance between the 2 wheels
-    private Coords currentPosition;
+	private Coords currentPosition;
 	private Maze maze;
 	private double fitness;
 	private double lastMinSensorValue;
 	// for fitness calculation:
-    private boolean[][] grid;
-	private Visualizer visualizer;
+	boolean[][] grid;
+	final static int GRIDSIZE = 500;
+	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
-	    currentPosition = new Coords(x, y);
-	    currentPosition.setAngle(0);
+		currentPosition = new Coords(x, y);
+		currentPosition.setAngle(0);
 		this.maze = maze;
 		maze.setLength(l);
 		this.fitness = 0;
 		this.lastMinSensorValue = 0;
-		// TODO maybe change the size of the grid;
-		grid = new boolean[500][500];
+
+		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
 	}
 
@@ -41,33 +42,34 @@ public class Robot {
 		double iccX;
 		double iccY;
 		double newx = 0;
-		double newy =0;
+		double newy = 0;
 		double newtheta = 0;
 		if (vR == vL) {
-			x = x + Math.cos(theta)*vR*deltat;
-			y = y + Math.sin(theta)*vR*deltat;
+			x = x + Math.cos(theta) * vR * deltat;
+			y = y + Math.sin(theta) * vR * deltat;
 			// just move forward;
 		} else {
 			r = (l / 2) * ((vL + vR) / (vR - vL));
-			w = (vR - vL) / l; //evtl problem mit Rad und Deg?
+			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
 			iccX = x - r * Math.sin(Math.toRadians(theta));
 			iccY = y + r * Math.cos(Math.toRadians(theta));
-			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w*deltat)*(y-iccY)) + iccX;
-			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w*deltat)*(y-iccY)) + iccY;
-			newtheta = theta + w*deltat;
+			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
+			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+			newtheta = theta + w * deltat;
 			x = newx;
 			y = newy;
-			theta= newtheta;
+			theta = newtheta;
 		}
-		
 
-		boolean colision = maze.getCorrectPosition(currentPosition, new Coords(newx, newy));
+		//TODO maybe change back to boolean return  or already update position and find a way to realize if there was a collision.
+		boolean colision = currentPosition == maze.getCorrectPosition(currentPosition, new Coords(newx, newy));
+
 		if (colision) {
 			// decrease fitnesfunction
 			fitness -= COLISIONDECREASE;
 		} else {
 			// alternative fitness function:
-			// updateFitness(x,y);
+			// updateFitness(x,y); -> maybe also old x and y
 			// calculate a fitnesupdate
 			// V= average of unsigned rotation
 			// deltaV= difference between the signed rotation
@@ -86,7 +88,7 @@ public class Robot {
 			currentPosition.setY(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(theta);
-//			direction = theta;
+			// direction = theta;
 			// direction has to be update too
 		}
 	}
@@ -94,9 +96,9 @@ public class Robot {
 	public double[] getSensorValues() {
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
-        double[] sensors = new double[15];
-        double[] tmp = maze.calculateSensorValues(currentPosition);
-        System.arraycopy(tmp, 0, sensors, 0, tmp.length);
+		double[] sensors = new double[15];
+		double[] tmp = maze.calculateSensorValues();
+		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
 		lastMinSensorValue = sensors[0];
 		for (int i = 1; i < sensors.length; i++) {
 			if (sensors[i] < lastMinSensorValue) {
@@ -109,10 +111,17 @@ public class Robot {
 		return sensors;
 	}
 
-	public void updateFitness(double x, double y) {
+	public void updateFitness(double oldX, double oldY, double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
-		// search activate the single parts in the grid --> so calcuï¿½ate a route.
+		// search activate the single parts in the grid --> so calcuöate a route.
+		// mapping of position:
+		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
+		double height = GRIDSIZE / maze.getMaxY();
+		double fromX = oldX * width;
+		double fromY = oldY * height;
+		double toX = x * width;
+		double toY = y * height;
 		// int xG
 		// maze.getMaxX()
 	}
@@ -125,11 +134,11 @@ public class Robot {
 		return l;
 	}
 
-	public void setVisualizer(Visualizer visualizer) {
-		this.visualizer = visualizer;
+	public void setVisualizer(Visualizer visulizer) {
+		this.visulizer = visulizer;
 	}
 
-    public Coords getCurrentPosition() {
-        return currentPosition;
-    }
+	public Coords getCurrentPosition() {
+		return currentPosition;
+	}
 }
