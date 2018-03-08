@@ -11,7 +11,7 @@ public class Main {
 		Maze maze = new Maze();
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
 		Visualizer visualizer = new Visualizer(maze, robo);
-                robo.setVisualizer(visualizer);
+		robo.setVisualizer(visualizer);
 
 		/*
 		 * init a new population with size STARTINGPOP evolve this population for a
@@ -32,25 +32,22 @@ public class Main {
 */
 		Coords from = new Coords(2.0, 2.0);
 		Coords to = new Coords(2.0, -2.0);
-		Coords pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+		boolean pos = maze.checkForCollision(from, to);
+//		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 
 		from.setX(2.0);
 		from.setY(2.0);
 		to.setX(2.0);
 		to.setY(4.0);
-		pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+		pos = maze.checkForCollision(from, to);
+//		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 
 		from.setX(2.0);
 		from.setY(2.0);
 		to.setX(4.0);
 		to.setY(7.0);
-		pos = maze.getCorrectPosition(from, to);
-		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/"
-				+ pos.getY());
+		pos = maze.checkForCollision(from, to);
+//		System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos after check: " + pos.getX() + "/" + pos.getY());
 	}
 
 }
