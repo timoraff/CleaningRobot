@@ -31,29 +31,25 @@ public class Main {
 			System.out.println("Move: "+Arrays.toString(tmp));
 			robo.move(tmp/*fittest.calculate(robo.getSensorValues())*/);
 		}
-/*
-		Coords from = new Coords(2.0, 2.0);
-		Coords to = new Coords(2.0, -2.0);
-		boolean pos = maze.checkForCollision(from, to);
-		// System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos
-		// after check: " + pos.getX() + "/" + pos.getY());
 
-		from.setX(2.0);
-		from.setY(2.0);
-		to.setX(2.0);
-		to.setY(4.0);
-		pos = maze.checkForCollision(from, to);
-		// System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos
-		// after check: " + pos.getX() + "/" + pos.getY());
-
-		from.setX(2.0);
-		from.setY(2.0);
-		to.setX(4.0);
-		to.setY(7.0);
-		pos = maze.checkForCollision(from, to);
-		// System.out.println("Pos before check: " + to.getX() + "/" + to.getY() + " Pos
-		// after check: " + pos.getX() + "/" + pos.getY());
-		*/
+//		Coords from = new Coords(2.0, 2.0);
+//		Coords to = new Coords(2.0, -2.0);
+//		boolean pos = maze.checkForCollision(from, to);
+//		System.out.println(pos);
+//
+//		from.setX(2.0);
+//		from.setY(2.0);
+//		to.setX(10.0);
+//		to.setY(10.0);
+//		pos = maze.checkForCollision(from, to);
+//		System.out.println(pos);
+//
+//		from.setX(2.0);
+//		from.setY(2.0);
+//		to.setX(2.1);
+//		to.setY(1.99);
+//		pos = maze.checkForCollision(from, to);
+//		System.out.println(pos);
 	}
 
 }

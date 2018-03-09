@@ -4,8 +4,8 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private int l = 0;
-    double maxY;
-    double maxX;
+    private double maxY;
+    private double maxX;
 
     /**
      * contains the coordinate system, including the walls
@@ -14,8 +14,7 @@ public class Maze {
     Maze() {
         double minY;
         double minX = minY = 0.0;
-        double maxY;
-        double maxX = maxY = 30.0;
+        maxX = maxY = 30.0;
         environment = new HashSet<>();
         // wall
         environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY))); //bottom line
@@ -48,15 +47,17 @@ public class Maze {
         Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
         Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
         double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-        return !(distance == castRay(posLeft, degrees)) || !(distance == castRay(posRight, degrees));
+        return !(!(distance > castRay(posLeft, degrees)) && !(distance > castRay(posRight, degrees)));
     }
 
+    /**
+     * Calculate the distance between the robot and walls in 12 directions
+     * @param currentPosition pos of the robot
+     * @return array of measurements
+     */
     public double[] calculateSensorValues(Coords currentPosition) {
         double sensors[]= new double[12];
         double[] degrees = {0,30,60,90,120,150,180,210,240,270,300,330};
-//        for(int i = 0; i < degrees.length; i++) {
-//            sensors[i] = Double.MAX_VALUE;
-//        }
 
         for(int i = 0; i < degrees.length; i++) {
             sensors[i] = castRay(currentPosition, degrees[i]);
@@ -70,16 +71,14 @@ public class Maze {
 
         double percent = 10;
         for (double distance : sensors) {
-//            if (distance != Integer.MAX_VALUE) {
-                double rand = Math.random();
-                double noisyDistance;
-                if (rand < 0.5) {
-                    noisyDistance = distance - distance * (distance/maxDistance) * percent/100 * rand;
-                } else {
-                    noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
-                }
-                //System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
-//            }
+            double rand = Math.random();
+            double noisyDistance;
+            if (rand < 0.5) {
+                noisyDistance = distance - distance * (distance/maxDistance) * percent/100 * rand;
+            } else {
+                noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
+            }
+            //System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
         }
 
         return sensors;
