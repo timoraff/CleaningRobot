@@ -1,3 +1,4 @@
+import java.util.Arrays;
 
 public class Main {
 	final static int ITERATIONS = 100;
@@ -13,10 +14,10 @@ public class Main {
 		 */
 		Population pop = new Population(STARTINGPOP);
 		for (int i = 0; i < ITERATIONS; i++) {
-			System.out.println("Evo No: " + i + 1);
+			System.out.println("Evo No: " + i );
 			pop = Controller.evolveEvolution(pop);
 		}
-/*
+		
 		// how to get the correct position for the robot
 		Maze maze = new Maze();
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze);
@@ -26,7 +27,9 @@ public class Main {
 		// let the fittest model play for some time --> for seeing a result..
 		NeuralNet fittest = pop.getFittest();
 		for (int i = 0; i < 200; i++) {
-			robo.move(fittest.calculate(robo.getSensorValues()));
+			double[] tmp = fittest.calculate(robo.getSensorValues());
+			System.out.println("Move: "+Arrays.toString(tmp));
+			robo.move(tmp/*fittest.calculate(robo.getSensorValues())*/);
 		}
 /*
 		Coords from = new Coords(2.0, 2.0);

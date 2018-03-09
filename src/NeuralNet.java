@@ -1,3 +1,5 @@
+import java.util.Arrays;
+
 import com.sun.webkit.dom.WheelEventImpl;
 
 public class NeuralNet {
@@ -31,30 +33,43 @@ public class NeuralNet {
 		for (int i = 0; i < NETWORKSIZE; i++) {
 			this.output[i] = new double[LAYERSIZES[i]];
 			this.bias[i] = new double[LAYERSIZES[i]];
-			if (i > 0 && initWeights) {
+			if (i > 0) {
 				this.weights[i] = new double[LAYERSIZES[i]][LAYERSIZES[i - 1]];
 				// init weights randomly
-				for (int j = 0; j < LAYERSIZES[i]; j++) {
-					for (int k = 0; k < LAYERSIZES[i - 1]; k++) {
-						this.weights[i][j][k] = Math.random();
+				if (initWeights) {
+					for (int j = 0; j < LAYERSIZES[i]; j++) {
+						for (int k = 0; k < LAYERSIZES[i - 1]; k++) {
+							this.weights[i][j][k] = (Math.random()-0.5)/10;
+						}
 					}
 				}
 			}
 		}
 		// TODO count nunmber of weights--> so other layouts are also possible
-		this.weightsCount = 15 * 2;
+		//this.weightsCount = 15 * 2;
+		
+		this.weightsCount =0;
+		for (int j = 0; j < NETWORKSIZE-1; j++) {
+			weightsCount+=LAYERSIZES[j] * LAYERSIZES[j + 1];
+		}
+		
+
 		// count number of weights:
 		// for(int i =0;i<Network)
 	}
 
 	public double[] calculate(double[] in) {
+		//System.out.println(Arrays.toString(in));
 		if (in.length == INPUTSIZE) {
 			this.output[0] = in;
 			for (int l = 1; l < NETWORKSIZE; l++) {
 				for (int n = 0; n < LAYERSIZES[l]; n++) {
 					double sum = bias[l][n];
 					for (int nPrev = 0; nPrev < LAYERSIZES[l - 1]; nPrev++) {
+						//System.out.println("l: " + l + " n: " + n + " nPrev: " + nPrev);
+						//System.out.println(weights[l][n][nPrev]);
 						sum += output[l - 1][nPrev] * weights[l][n][nPrev];
+						//System.out.println("sum: "+sum);
 					}
 					output[l][n] = sigmoid(sum);
 				}
@@ -75,12 +90,17 @@ public class NeuralNet {
 
 	public void setWeight(int i, double w) {
 		int[] tmp = getIndeces(i);
-		weights[tmp[0]][tmp[1]][tmp[2]] = w;
+		if (tmp[0] != 0)
+			weights[tmp[0]][tmp[1]][tmp[2]] = w;
 	}
 
 	public double getWeight(int i) {
 		int[] tmp = getIndeces(i);
-		return weights[tmp[0]][tmp[1]][tmp[2]];
+		if (tmp[0] != 0) {
+			return weights[tmp[0]][tmp[1]][tmp[2]];
+		} else {
+			return 0;
+		}
 	}
 
 	public int[] getIndeces(int idx) {
@@ -92,7 +112,7 @@ public class NeuralNet {
 				idx -= LAYERSIZES[counter] * LAYERSIZES[counter + 1];
 				counter++;
 			} else {
-				ret[0] = counter;
+				ret[0] = counter+1;
 				ret[1] = idx / LAYERSIZES[counter];
 				ret[2] = idx % LAYERSIZES[counter];
 				return ret;
@@ -111,7 +131,8 @@ public class NeuralNet {
 		// TODO starting pos of robot ?;
 		Robot r = new Robot(2, 2, new Maze());
 		// play for some steps
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 10; i++) {
+			//System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
 			r.move(calculate(r.getSensorValues()));
 			// either add fitness calculation in here or in the robot class?
 		}

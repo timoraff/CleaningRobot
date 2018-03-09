@@ -27,8 +27,10 @@ public class Controller {
 		boolean isX = true;
 		for (int i = 0; i < a.getWeightCount(); i++) {// weightscount =15*2
 			if (Math.random() < 0.5) {
+				//System.out.println("weight a:" + a.getWeight(i));
 				indi.setWeight(i, a.getWeight(i));
 			} else {
+				//System.out.println("weightb: " + b.getWeight(i));
 				indi.setWeight(i, b.getWeight(i));
 			}
 		}
@@ -38,7 +40,7 @@ public class Controller {
 	private static void mutate(NeuralNet indiv) { // Loop through genes boolean
 		for (int i = 0; i < indiv.getWeightCount(); i++) {
 			if (Math.random() <= mutationRate) { // Create random weight
-				double weight = (byte) Math.round(Math.random()); //
+				double weight = Math.random(); //
 				indiv.setWeight(i, weight);
 			}
 		}

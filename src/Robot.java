@@ -85,7 +85,8 @@ public class Robot {
 				i = lastMinSensorValue / 6.;
 
 			}
-			fitness += v * (1 - Math.sqrt(deltaV)) * i;
+			//fitness += v * (1 - Math.sqrt(deltaV)) * i;
+			fitness+=1;
 			currentPosition.setY(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(theta);
