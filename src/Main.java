@@ -30,7 +30,12 @@ public class Main {
 			double[] tmp = fittest.calculate(robo.getSensorValues());
 			System.out.println("Move: "+Arrays.toString(tmp));
 			robo.move(tmp/*fittest.calculate(robo.getSensorValues())*/);
-			
+			try {
+				Thread.sleep(100);
+				visualizer.update();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 			//System.out.println(robo.getCurrentPosition().toString());
 		}
 
