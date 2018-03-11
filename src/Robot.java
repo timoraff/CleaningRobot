@@ -53,8 +53,8 @@ public class Robot {
 			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
 			iccX = x - r * Math.sin(Math.toRadians(theta));
 			iccY = y + r * Math.cos(Math.toRadians(theta));
-			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
-			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+			newx = Math.cos(Math.toRadians(w * deltat)) * (x - iccX) - (Math.sin(Math.toRadians(w * deltat)) * (y - iccY)) + iccX;
+			newy = Math.sin(Math.toRadians(w * deltat)) * (x - iccX) + (Math.cos(Math.toRadians(w * deltat)) * (y - iccY)) + iccY;
 			newtheta = theta + w * deltat;
 			x = newx;
 			y = newy;
