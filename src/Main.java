@@ -1,7 +1,7 @@
 import java.util.Arrays;
 
 public class Main {
-	final static int ITERATIONS = 200;
+	final static int ITERATIONS = 50;
 	final static int STARTINGPOP = 150;
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;

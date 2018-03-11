@@ -40,7 +40,7 @@ public class Controller {
 	private static void mutate(NeuralNet indiv) { // Loop through genes boolean
 		for (int i = 0; i < indiv.getWeightCount(); i++) {
 			if (Math.random() <= mutationRate) { // Create random weight
-				double weight = Math.random(); //
+				double weight = (Math.random()-0.5)*2; //
 				indiv.setWeight(i, weight);
 			}
 		}

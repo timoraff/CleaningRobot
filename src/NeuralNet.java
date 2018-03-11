@@ -17,7 +17,7 @@ public class NeuralNet {
 
 	public NeuralNet(boolean initWeights/* int... LAYERSIZES */) {
 		// fixed size: 15 in 2 out no hidden layer.
-		int[] LAYERSIZES = new int[] { 15, 2 };
+		int[] LAYERSIZES = new int[] { 15,10,10, 2 };
 		// at least 2
 		this.LAYERSIZES = LAYERSIZES;
 		NETWORKSIZE = LAYERSIZES.length;
@@ -39,14 +39,12 @@ public class NeuralNet {
 				if (initWeights) {
 					for (int j = 0; j < LAYERSIZES[i]; j++) {
 						for (int k = 0; k < LAYERSIZES[i - 1]; k++) {
-							this.weights[i][j][k] = (Math.random()-0.5)/10;
+							this.weights[i][j][k] = (Math.random()-0.5)*2;///10;
 						}
 					}
 				}
 			}
 		}
-		// TODO count nunmber of weights--> so other layouts are also possible
-		//this.weightsCount = 15 * 2;
 		
 		this.weightsCount =0;
 		for (int j = 0; j < NETWORKSIZE-1; j++) {
@@ -108,7 +106,7 @@ public class NeuralNet {
 		int counter = 0;
 		double a = idx / LAYERSIZES[counter];
 		while (idx > 0) {
-			if (a > LAYERSIZES[counter + 1]) {
+			if (a >= LAYERSIZES[counter + 1]) {
 				idx -= LAYERSIZES[counter] * LAYERSIZES[counter + 1];
 				counter++;
 			} else {
