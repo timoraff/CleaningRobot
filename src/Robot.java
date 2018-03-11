@@ -45,8 +45,8 @@ public class Robot {
 		double newy = 0;
 		double newtheta = 0;
 		if (vR == vL) {
-			x = x + Math.cos(theta) * vR * deltat;
-			y = y + Math.sin(theta) * vR * deltat;
+			x = x + Math.cos(Math.toRadians(theta)) * vR * deltat;
+			y = y + Math.sin(Math.toRadians(theta)) * vR * deltat;
 			// just move forward;
 		} else {
 			r = (l / 2) * ((vL + vR) / (vR - vL));
