@@ -1,8 +1,8 @@
 import java.util.Arrays;
 
 public class Main {
-	final static int ITERATIONS = 50;
-	final static int STARTINGPOP = 150;
+	final static int ITERATIONS = 40;
+	final static int STARTINGPOP = 80;
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
 
@@ -26,12 +26,12 @@ public class Main {
 
 		// let the fittest model play for some time --> for seeing a result..
 		NeuralNet fittest = pop.getFittest();
-		for (int i = 0; i < 200; i++) {
+		for (int i = 0; i < 2000; i++) {
 			double[] tmp = fittest.calculate(robo.getSensorValues());
 			System.out.println("Move: "+Arrays.toString(tmp));
 			robo.move(tmp/*fittest.calculate(robo.getSensorValues())*/);
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();

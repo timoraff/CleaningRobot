@@ -13,12 +13,12 @@ public class Robot {
 	private double lastMinSensorValue;
 	// for fitness calculation:
 	boolean[][] grid;
-	final static int GRIDSIZE = 500;
+	final static int GRIDSIZE = 1000;
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
 		currentPosition = new Coords(x, y);
-		currentPosition.setAngle(0);
+		currentPosition.setAngle(270);
 		this.maze = maze;
 		maze.setLength(l);
 		this.fitness = 0;
@@ -76,22 +76,24 @@ public class Robot {
 			// deltaV= difference between the signed rotation
 			// i corresponds to the distance to the next wall.
 			// V*(1-Math.sqrt(deltaV))*(1-i)
+			
 			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i = 6;
-			if (lastMinSensorValue < 6) {
+			double i = 100;
+			//if (lastMinSensorValue < 6) {
 				i = lastMinSensorValue;
-
-			}
-			i/=6;
+			//}
+			//i/=6;
 			//System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
 			//fitness+=1;
+			//updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(theta);
+			
 			// direction = theta;
 			// direction has to be update too
 		}
@@ -117,17 +119,21 @@ public class Robot {
 	}
 
 	// currently not used.
-	public void updateFitness(double oldX, double oldY, double x, double y) {
+	public void updateFitness(/*double oldX, double oldY,*/ double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
 		// search activate the single parts in the grid --> so calcuöate a route.
 		// mapping of position:
 		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
 		double height = GRIDSIZE / maze.getMaxY();
-		double fromX = oldX * width;
-		double fromY = oldY * height;
-		double toX = x * width;
-		double toY = y * height;
+		//double fromX = oldX * width;
+		//double fromY = oldY * height;
+		int toX =(int) (x * width);
+		int toY = (int)(y * height);
+		if(!grid[toX][toY]) {
+			grid[toX][toY]=true;
+			fitness+=10;
+		}
 		// int xG
 		// maze.getMaxX()
 	}

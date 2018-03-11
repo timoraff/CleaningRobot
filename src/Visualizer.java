@@ -4,7 +4,7 @@ import java.awt.*;
 class Visualizer extends JPanel {
 
 	private static final double BORDER = 100.0;
-	private static final double SCALE = 15.0;
+	private static final double SCALE = 6.0;
 	private Maze maze;
 	private Robot robot;
 	private int frameWidth;

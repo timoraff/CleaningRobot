@@ -1,6 +1,6 @@
 
 public class TournamentSelection implements SelectionStrategy {
-final static int GroupCount=5;
+final static int GroupCount=10;
 	@Override
 	public NeuralNet select(Population pop) {
 		Population tmp = new Population(0);
