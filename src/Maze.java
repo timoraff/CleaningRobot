@@ -57,7 +57,20 @@ public class Maze {
      */
     public double[] calculateSensorValues(Coords currentPosition) {
         double sensors[]= new double[12];
-        double[] degrees = {0,30,60,90,120,150,180,210,240,270,300,330};
+        double[] degrees = {
+                currentPosition.getAngle(),
+                currentPosition.getAngle() + 30,
+                currentPosition.getAngle() + 60,
+                currentPosition.getAngle() + 90,
+                currentPosition.getAngle() + 120,
+                currentPosition.getAngle() + 150,
+                currentPosition.getAngle() + 180,
+                currentPosition.getAngle() + 210,
+                currentPosition.getAngle() + 240,
+                currentPosition.getAngle() + 270,
+                currentPosition.getAngle() + 300,
+                currentPosition.getAngle() + 330
+        };
 
         for(int i = 0; i < degrees.length; i++) {
             sensors[i] = castRay(currentPosition, degrees[i]);
