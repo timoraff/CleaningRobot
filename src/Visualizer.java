@@ -10,6 +10,7 @@ class Visualizer extends JPanel {
 	private int frameWidth;
 	private int frameHeight;
 	private JFrame frame;
+	private Coords oldRoboCoords = new Coords(0, 0);
 
 	public Visualizer(Maze maze, Robot robot) {
 
@@ -76,9 +77,46 @@ class Visualizer extends JPanel {
 		Coords roboCoords = robot.getCurrentPosition();
 		g.setColor(Color.RED);
 		int l = robot.getL();
-		g.fillOval((int) (BORDER + (roboCoords.getX() + l / 2.0) * SCALE - l * SCALE),
-				(int) (BORDER + (roboCoords.getY() + l / 2.0) * SCALE - l * SCALE), (int) (l * SCALE),
-				(int) (l * SCALE));
+		int finalX = (int) (BORDER + (roboCoords.getX() - l/2.0) * SCALE);
+		int finalY = (int) (BORDER + (roboCoords.getY() - l/2.0) * SCALE);
+		int finalWidth = (int) (l * SCALE);
+		g.fillOval(finalX, finalY, finalWidth, finalWidth);
+		if (oldRoboCoords != null) {
+			double degrees = getDegrees(oldRoboCoords, roboCoords);
+			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0)*Math.cos(Math.toRadians(degrees)));
+			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0)*Math.sin(Math.toRadians(degrees)));
+			g.setColor(Color.WHITE);
+			int size = (int)(l/4.0 * SCALE);
+			g.fillOval((int)(x-size/2.0), (int)(y-size/2.0), size, size);
+		}
+		oldRoboCoords.setX(roboCoords.getX());
+		oldRoboCoords.setY(roboCoords.getY());
+	}
+	
+	private double getDegrees(Coords oldC, Coords newC) {
+		
+		double dx = oldC.getX() - newC.getX();
+		double dy = oldC.getY() - newC.getY();
+				
+		if (dx == 0 && dy == 0) {
+			return 0;
+		} else if (dx == 0 && dy < 0) {
+			return 90;
+		} else if (dx == 0 && dy > 0) {
+			return 270;
+		} else if (dy == 0 && dx < 0) {
+			return 0;
+		} else if (dy == 0 && dx > 0) {
+			return 180;
+		} else if (dy < 0 && dx < 0) {
+			return 90-Math.atan(Math.abs(dx) / Math.abs(dy)) * 180 / Math.PI;
+		} else if (dy > 0 && dx < 0) {
+			return 270 + Math.atan(Math.abs(dx) / Math.abs(dy)) * 180 / Math.PI;
+		} else if (dy > 0 && dx > 0) {
+			return 270 - Math.atan(Math.abs(dx) / Math.abs(dy)) * 180 / Math.PI;
+		} else {
+			return 90 + Math.atan(Math.abs(dx) / Math.abs(dy)) * 180 / Math.PI;
+		}
 	}
 
 	@Override
