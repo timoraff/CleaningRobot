@@ -1,8 +1,8 @@
 import java.util.Arrays;
 
 public class Main {
-	final static int ITERATIONS = 100;
-	final static int STARTINGPOP = 80;
+	final static int ITERATIONS = 200;
+	final static int STARTINGPOP = 150;
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
 
@@ -30,6 +30,8 @@ public class Main {
 			double[] tmp = fittest.calculate(robo.getSensorValues());
 			System.out.println("Move: "+Arrays.toString(tmp));
 			robo.move(tmp/*fittest.calculate(robo.getSensorValues())*/);
+			
+			//System.out.println(robo.getCurrentPosition().toString());
 		}
 
 //		Coords from = new Coords(2.0, 2.0);

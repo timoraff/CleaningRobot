@@ -131,11 +131,12 @@ public class NeuralNet {
 		// TODO starting pos of robot ?;
 		Robot r = new Robot(2, 2, new Maze());
 		// play for some steps
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			//System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
 			r.move(calculate(r.getSensorValues()));
 			// either add fitness calculation in here or in the robot class?
 		}
+		//System.out.println("fitness: "+ fitness);
 		fitness = r.getFitness();
 	}
 }

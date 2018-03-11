@@ -1,6 +1,6 @@
 
 public class Controller {
-	private static final double mutationRate = 0.015;
+	private static final double mutationRate = 0.15;
 
 	public static Population evolveEvolution(Population pop) {
 		pop.test();

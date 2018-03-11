@@ -80,14 +80,15 @@ public class Robot {
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i = 1;
+			double i = 6;
 			if (lastMinSensorValue < 6) {
-				i = lastMinSensorValue / 6.;
+				i = lastMinSensorValue;
 
 			}
-			//fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			fitness+=1;
-			currentPosition.setY(newx);
+			i/=6;
+			fitness += v * (1 - Math.sqrt(deltaV)) * lastMinSensorValue;
+			//fitness+=1;
+			currentPosition.setX(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(theta);
 			// direction = theta;
@@ -102,7 +103,8 @@ public class Robot {
 		double[] tmp = maze.calculateSensorValues(currentPosition);
 		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
 		lastMinSensorValue = sensors[0];
-		for (int i = 1; i < sensors.length; i++) {
+		// dont take last 3 inputs in account --> these are last output + orientation
+		for (int i = 1; i < sensors.length - 3; i++) {
 			if (sensors[i] < lastMinSensorValue) {
 				lastMinSensorValue = sensors[i];
 			}
@@ -113,6 +115,7 @@ public class Robot {
 		return sensors;
 	}
 
+	// currently not used.
 	public void updateFitness(double oldX, double oldY, double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
@@ -129,7 +132,7 @@ public class Robot {
 	}
 
 	public double getFitness() {
-		return 0;
+		return fitness;
 	}
 
 	public int getL() {
@@ -143,4 +146,5 @@ public class Robot {
 	public Coords getCurrentPosition() {
 		return currentPosition;
 	}
+
 }
