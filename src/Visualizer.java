@@ -5,10 +5,14 @@ import java.util.Set;
 import javax.security.auth.login.*;
 import java.awt.Polygon;
 
+/**
+ * @author Pit Schneider i6173083
+ */
+
 class Visualizer extends JPanel {
 
-	private static final double BORDER = 100.0;
-	private static final double SCALE = 6.0;
+	private static final double BORDER = 100.0; // border between start of the window and maze (all 4 sides)
+	private static final double SCALE = 6.0; // everything is scaled according to this constant
 	private Maze maze;
 	private Robot robot;
 	private int frameWidth;
@@ -16,7 +20,7 @@ class Visualizer extends JPanel {
 	private JFrame frame;
 	private Coords currentRoboCoords = new Coords(0, 0);
 	private Coords oldRoboCoords = new Coords(0, 0);
-	private ArrayList<Coords> covered = new ArrayList<>();
+	private ArrayList<Coords> covered = new ArrayList<>(); // saves all visited positions of the robot
 
 	public Visualizer(Maze maze, Robot robot) {
 
@@ -35,6 +39,7 @@ class Visualizer extends JPanel {
 		frame.setVisible(true);
 	}
 
+	// draws maze with all edges
 	private void drawEnvironment(Graphics g) {
 
 		for (Edges edge : maze.getEnvironment()) {
@@ -49,6 +54,7 @@ class Visualizer extends JPanel {
 		}
 	}
 
+	// determine the dimensions of the window
 	private void getFrameDimensions() {
 
 		int maxX = 0;
@@ -78,8 +84,10 @@ class Visualizer extends JPanel {
 		frame.pack();
 	}
 
+	// draws robot and the current moving direction
 	private void drawRobot(Graphics g) {
 
+		// draws actual robot as a circle
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(Color.RED);
@@ -89,7 +97,9 @@ class Visualizer extends JPanel {
 		int finalWidth = (int) (l * SCALE);
 		g2.fillOval(finalX, finalY, finalWidth, finalWidth);
 
+		// in case we have a moving direction
 		if (oldRoboCoords != null) {
+			// moving direction is obtained by comparing old and current coordinates
 			double degrees = getDegrees(oldRoboCoords, currentRoboCoords);
 			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0)*Math.cos(Math.toRadians(degrees)));
 			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0)*Math.sin(Math.toRadians(degrees)));
@@ -101,6 +111,7 @@ class Visualizer extends JPanel {
 		oldRoboCoords.setY(currentRoboCoords.getY());
 	}
 	
+	// returns the angle of a line between two points
 	private double getDegrees(Coords oldC, Coords newC) {
 		
 		double dx = oldC.getX() - newC.getX();
@@ -127,18 +138,25 @@ class Visualizer extends JPanel {
 		}
 	}
 	
+	// trace of robot
 	public void drawCovered(Graphics g) {
 		
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2.setColor(Color.YELLOW);
 		Coords oldCoords = new Coords(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		
+		// for every past robot position
 		for (Coords coords : covered) {
+			
 			int l = robot.getL();
 			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
 			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
 			int finalWidth = (int) (l * SCALE);
+			
+			// draw area covered by robot on position
 			g2.fillOval(finalX, finalY, finalWidth, finalWidth);
+			
 			if(oldCoords.getX()!=Integer.MIN_VALUE) {
 				
 				double degrees = getDegrees(oldCoords, coords);
@@ -153,7 +171,8 @@ class Visualizer extends JPanel {
 				
 				double startX2 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees-90));
 				double startY2 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees-90));
-								
+					
+				// rectangle fills area between consecutive robot positions to avoid gaps in the trace	
 				Polygon p = new Polygon();
 				p.addPoint((int)endX1, (int)endY1);
 				p.addPoint((int)endX2, (int)endY2);
@@ -164,8 +183,6 @@ class Visualizer extends JPanel {
 			oldCoords.setX(coords.getX());
 			oldCoords.setY(coords.getY());
 		}
-
-		
 	}
 
 	@Override
@@ -173,17 +190,21 @@ class Visualizer extends JPanel {
 
 		super.paintComponent(g);
 
+		// determine the needed size of the window
 		getFrameDimensions();
 
+		// translates the java swing coordinate system origin, which is top left, to top right (mathematically easier)
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.translate(0, frameHeight);
 		g2d.scale(1.0, -1.0);
 
+		// draw everything
 		drawEnvironment(g);
 		drawCovered(g);
 		drawRobot(g);
 	}
 
+	// robot has a new position
 	public void update() {
 		currentRoboCoords = robot.getCurrentPosition();
 		covered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
