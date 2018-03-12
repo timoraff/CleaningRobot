@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.Arrays;
 
 import com.sun.webkit.dom.WheelEventImpl;
@@ -11,7 +12,11 @@ import com.sun.webkit.dom.WheelEventImpl;
  *         initial layer has to have 15 nodes and the output layer has to have 2
  *         nodes.
  */
-public class NeuralNet {
+public class NeuralNet implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	double output[][];
 	double weights[][][];
 	double bias[][];
@@ -161,15 +166,30 @@ public class NeuralNet {
 	/**
 	 * tests a robot on this neural network. 
 	 */
-	public void test(int x,int y) {
+	public void test() {
 		// TODO change starting postions of the robots
-		Robot r = new Robot(x, y, new Maze());
+		Robot r = new Robot(2,2, new Maze());
 		// play for some steps
-		for (int i = 0; i < 5000; i++) {
+		for (int i = 0; i < 2000; i++) {
+			// System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
+			r.move(calculate(r.getSensorValues()));
+		}
+		r.setPosition(98,2);
+		for (int i = 0; i < 2000; i++) {
+			// System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
+			r.move(calculate(r.getSensorValues()));
+		}
+		r.setPosition(2,98);
+		for (int i = 0; i < 2000; i++) {
+			// System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
+			r.move(calculate(r.getSensorValues()));
+		}
+		r.setPosition(98,98);
+		for (int i = 0; i < 2000; i++) {
 			// System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
 			r.move(calculate(r.getSensorValues()));
 		}
 		// System.out.println("fitness: "+ fitness);
-		fitness += r.getFitness();
+		fitness = r.getFitness();
 	}
 }

@@ -13,7 +13,7 @@ public class Robot {
 	private double lastMinSensorValue;
 	// for fitness calculation:
 	boolean[][] grid;
-	final static int GRIDSIZE = 50;
+	final static int GRIDSIZE = 100;
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
@@ -26,6 +26,10 @@ public class Robot {
 
 		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
+	}
+	public void setPosition(int x, int y) {
+		currentPosition.setX(x);
+		currentPosition.setY(y);
 	}
 
 	public void move(double[] velocity) {
@@ -46,8 +50,8 @@ public class Robot {
 		double newy = 0;
 		double newtheta = 0;
 		if (vR == vL) {
-			x = x + Math.cos(theta) * vR * deltat;
-			y = y + Math.sin(theta) * vR * deltat;
+			newx = x + Math.cos(theta) * vR * deltat;
+			newy = y + Math.sin(theta) * vR * deltat;
 			// just move forward;
 		} else {
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
@@ -69,8 +73,8 @@ public class Robot {
 
 		if (colision || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() || newy > maze.getMaxY()) {
 			// decrease fitnesfunction
-			fitness -= 20*COLISIONDECREASE;
-			colision = false;
+			//fitness -= COLISIONDECREASE;
+			/*colision = false;
 			colision = maze.checkForCollision(currentPosition, new Coords(newx, y, newtheta));
 			if (colision) {
 				currentPosition.setX(x);
@@ -81,7 +85,7 @@ public class Robot {
 				currentPosition.setY(y);
 				currentPosition.setAngle(newtheta);
 			}
-			colision = false;
+			colision = false;*/
 		} else {
 			// alternative fitness function:
 			// updateFitness(x,y); -> maybe also old x and y
@@ -92,18 +96,20 @@ public class Robot {
 			// V*(1-Math.sqrt(deltaV))*(1-i)
 
 			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
-			double deltaV = Math.abs(vL - vR)*10;
+			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i = 4;
-			if (lastMinSensorValue < 4) {
+			double i = 6;
+			if (lastMinSensorValue < 6) {
 				i = lastMinSensorValue;
 			}
-			i /= 4;
+			i /= 6.;
 			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
-			fitness += v * 3*(1 - Math.sqrt(deltaV)) * i;
+			fitness += v * (1 - Math.sqrt(deltaV)) * i;
+			
+			
 			// fitness+=1;
-			updateFitness(newx, newy);
+			//updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(newtheta);
@@ -133,7 +139,7 @@ public class Robot {
 	// currently not used.
 	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
 		if (x < 0 || y < 0 || y > maze.getMaxY() || x > maze.getMaxX()) {
-			fitness -= 10;
+			fitness -= COLISIONDECREASE;
 		} else {
 			double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
 			double height = GRIDSIZE / maze.getMaxY();
@@ -144,7 +150,7 @@ public class Robot {
 			//System.out.println("grid position: x: " + toX + " y: " + toY);
 			if (!grid[toX][toY]) {
 				grid[toX][toY] = true;
-				fitness += 10;
+				fitness += 4;
 			}
 		}
 		// take a look in the grid and see how much (%) is visited
