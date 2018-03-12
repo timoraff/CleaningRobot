@@ -161,15 +161,15 @@ public class NeuralNet {
 	/**
 	 * tests a robot on this neural network. 
 	 */
-	public void test() {
+	public void test(int x,int y) {
 		// TODO change starting postions of the robots
-		Robot r = new Robot(2, 2, new Maze());
+		Robot r = new Robot(x, y, new Maze());
 		// play for some steps
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 5000; i++) {
 			// System.out.println("acc: "+ Arrays.toString(calculate(r.getSensorValues())));
 			r.move(calculate(r.getSensorValues()));
 		}
 		// System.out.println("fitness: "+ fitness);
-		fitness = r.getFitness();
+		fitness += r.getFitness();
 	}
 }

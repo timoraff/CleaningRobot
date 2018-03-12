@@ -30,7 +30,10 @@ public class Population {
 	 */
 	public void test() {
 		for (NeuralNet nn : pop) {
-			nn.test();
+			nn.test(2,2);
+			nn.test(98, 2);
+			nn.test(2, 98);
+			nn.test(98, 98);
 		}
 	}
 

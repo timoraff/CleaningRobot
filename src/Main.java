@@ -2,9 +2,9 @@ import java.util.Arrays;
 
 public class Main {
 	// number of evolutino steps
-	final static int ITERATIONS = 10;
+	final static int ITERATIONS = 20;
 	// size of the starting population
-	final static int STARTINGPOP = 80;
+	final static int STARTINGPOP = 60;
 	// starting position for the robot
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
@@ -29,7 +29,7 @@ public class Main {
 
 		// let the fittest model play for some time --> for seeing a result..
 		NeuralNet fittest = pop.getFittest();
-		for (int i = 0; i < 2000; i++) {
+		for (int i = 0; i < 20000; i++) {
 			double[] tmp = fittest.calculate(robo.getSensorValues());
 			System.out.println("Move: " + Arrays.toString(tmp));
 			robo.move(tmp/* fittest.calculate(robo.getSensorValues()) */);
