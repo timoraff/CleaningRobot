@@ -7,14 +7,14 @@ import java.util.Arrays;
 
 public class Main {
 	// number of evolutino steps
-	final static int ITERATIONS = 40;
+	final static int ITERATIONS = 20;
 	// size of the starting population
 	final static int STARTINGPOP = 140;
 	// starting position for the robot
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
-	static boolean JUSTLOAD = true;
-	static boolean CONTINUETRAINING = true;
+	static boolean JUSTLOAD = false;
+	static boolean CONTINUETRAINING = false;
 
 	// just a main to execute the programm
 	public static void main(String[] args) {
@@ -87,32 +87,13 @@ public class Main {
 			System.out.println("Move: " + Arrays.toString(tmp));
 			robo.move(tmp/* fittest.calculate(robo.getSensorValues()) */);
 			try {
-				Thread.sleep(5);
+				Thread.sleep(13);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 			// System.out.println(robo.getCurrentPosition().toString());
 		}
-
-		// Coords from = new Coords(2.0, 2.0);
-		// Coords to = new Coords(2.0, -2.0);
-		// boolean pos = maze.checkForCollision(from, to);
-		// System.out.println(pos);
-		//
-		// from.setX(2.0);
-		// from.setY(2.0);
-		// to.setX(10.0);
-		// to.setY(10.0);
-		// pos = maze.checkForCollision(from, to);
-		// System.out.println(pos);
-		//
-		// from.setX(2.0);
-		// from.setY(2.0);
-		// to.setX(2.1);
-		// to.setY(1.99);
-		// pos = maze.checkForCollision(from, to);
-		// System.out.println(pos);
 	}
 
 }
