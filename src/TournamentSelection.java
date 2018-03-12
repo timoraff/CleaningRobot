@@ -1,4 +1,9 @@
-
+/**
+ * 
+ * @author Timo Raff
+ * Tournament selection:
+ * selexct randomly a number of individuals and then chooses the fittest of this selection.
+ */
 public class TournamentSelection implements SelectionStrategy {
 final static int GroupCount=10;
 	@Override
