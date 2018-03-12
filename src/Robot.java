@@ -5,7 +5,7 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	private final static int COLISIONDECREASE = 2;
+	private final static int COLISIONDECREASE = 10;
 	private int l = 2; // distance between the 2 wheels
 	private Coords currentPosition;
 	private Maze maze;
@@ -13,7 +13,7 @@ public class Robot {
 	private double lastMinSensorValue;
 	// for fitness calculation:
 	boolean[][] grid;
-	final static int GRIDSIZE = 1000;
+	final static int GRIDSIZE = 100;
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
@@ -27,13 +27,17 @@ public class Robot {
 		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
 	}
+	public void setPosition(int x, int y) {
+		currentPosition.setX(x);
+		currentPosition.setY(y);
+	}
 
 	public void move(double[] velocity) {
 		// gets information from the NN Vr and Vl
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
-		//System.out.println("vL: " + vL + " vR: " + vR);
+		// System.out.println("vL: " + vL + " vR: " + vR);
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
 		double theta = Math.toRadians(currentPosition.getAngle());
@@ -51,7 +55,6 @@ public class Robot {
 			// just move forward;
 		} else {
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
-
 			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
 			//w = vR / (r+(l/2));
 			iccX = x - r * Math.sin(theta);
@@ -70,8 +73,9 @@ public class Robot {
 
 		if (colision || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() || newy > maze.getMaxY()) {
 			// decrease fitnesfunction
-			fitness -= 1000;
 			colision = false;
+			fitness -= COLISIONDECREASE;
+			
 			colision = maze.checkForCollision(currentPosition, new Coords(newx, y, newtheta));
 			if (colision) {
 				if (x - (maze.getMaxX()/2) > 0 ) {
@@ -104,20 +108,26 @@ public class Robot {
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i = 100;
-			// if (lastMinSensorValue < 6) {
-			i = lastMinSensorValue;
-			// }
-			// i/=6;
+			double i = 6;
+			if (lastMinSensorValue < 6) {
+				i = lastMinSensorValue;
+			}
+			i /= 6.;
 			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
+<<<<<<< HEAD
 			//fitness += (Math.abs(x-newx)+Math.abs(y-newy)) - deltaV + vL + vR ;
 			fitness -= deltaV;
+=======
+			fitness += v * (1 - Math.sqrt(deltaV)) * i;
+			
+			
+>>>>>>> 7c2266838842d593119a5557ce20e71f067a86c9
 			// fitness+=1;
-			// updateFitness(newx, newy);
+			//updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(newtheta);
-			//System.out.println("to: "+currentPosition);
+			// System.out.println("to: "+currentPosition);
 		}
 	}
 
@@ -142,20 +152,35 @@ public class Robot {
 
 	// currently not used.
 	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
+		if (x < 0 || y < 0 || y > maze.getMaxY() || x > maze.getMaxX()) {
+			fitness -= COLISIONDECREASE;
+		} else {
+			double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
+			double height = GRIDSIZE / maze.getMaxY();
+			// double fromX = oldX * width;
+			// double fromY = oldY * height;
+			int toX = (int) (x * width);
+			int toY = (int) (y * height);
+			//System.out.println("grid position: x: " + toX + " y: " + toY);
+			if (!grid[toX][toY]) {
+				grid[toX][toY] = true;
+				fitness += 4;
+			}
+		}
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
 		// search activate the single parts in the grid --> so calcuöate a route.
 		// mapping of position:
-		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
-		double height = GRIDSIZE / maze.getMaxY();
+		// double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
+		// double height = GRIDSIZE / maze.getMaxY();
 		// double fromX = oldX * width;
 		// double fromY = oldY * height;
-		int toX = (int) (x * width);
-		int toY = (int) (y * height);
-		if (!grid[toX][toY]) {
-			grid[toX][toY] = true;
-			fitness += 10;
-		}
+		// int toX = (int) (x * width);
+		// int toY = (int) (y * height);
+		// if (!grid[toX][toY]) {
+		// grid[toX][toY] = true;
+		// fitness += 10;
+		// }
 		// int xG
 		// maze.getMaxX()
 	}

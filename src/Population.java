@@ -1,3 +1,4 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -6,8 +7,12 @@ import java.util.ArrayList;
  *
  *         contains a population of neural networks
  */
-public class Population {
+public class Population implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	ArrayList<NeuralNet> pop = new ArrayList<>();
 
 	public Population(int count) {
