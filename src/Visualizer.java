@@ -1,5 +1,9 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.*;
+import java.util.Set;
+import javax.security.auth.login.*;
+import java.awt.Polygon;
 
 class Visualizer extends JPanel {
 
@@ -10,7 +14,9 @@ class Visualizer extends JPanel {
 	private int frameWidth;
 	private int frameHeight;
 	private JFrame frame;
+	private Coords currentRoboCoords = new Coords(0, 0);
 	private Coords oldRoboCoords = new Coords(0, 0);
+	private ArrayList<Coords> covered = new ArrayList<>();
 
 	public Visualizer(Maze maze, Robot robot) {
 
@@ -74,23 +80,25 @@ class Visualizer extends JPanel {
 
 	private void drawRobot(Graphics g) {
 
-		Coords roboCoords = robot.getCurrentPosition();
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(Color.RED);
 		int l = robot.getL();
-		int finalX = (int) (BORDER + (roboCoords.getX() - l/2.0) * SCALE);
-		int finalY = (int) (BORDER + (roboCoords.getY() - l/2.0) * SCALE);
+		int finalX = (int) (BORDER + (currentRoboCoords.getX() - l/2.0) * SCALE);
+		int finalY = (int) (BORDER + (currentRoboCoords.getY() - l/2.0) * SCALE);
 		int finalWidth = (int) (l * SCALE);
-		g.fillOval(finalX, finalY, finalWidth, finalWidth);
+		g2.fillOval(finalX, finalY, finalWidth, finalWidth);
+
 		if (oldRoboCoords != null) {
-			double degrees = getDegrees(oldRoboCoords, roboCoords);
+			double degrees = getDegrees(oldRoboCoords, currentRoboCoords);
 			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0)*Math.cos(Math.toRadians(degrees)));
 			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0)*Math.sin(Math.toRadians(degrees)));
-			g.setColor(Color.WHITE);
+			g2.setColor(Color.WHITE);
 			int size = (int)(l/4.0 * SCALE);
-			g.fillOval((int)(x-size/2.0), (int)(y-size/2.0), size, size);
+			g2.fillOval((int)(x-size/2.0), (int)(y-size/2.0), size, size);
 		}
-		oldRoboCoords.setX(roboCoords.getX());
-		oldRoboCoords.setY(roboCoords.getY());
+		oldRoboCoords.setX(currentRoboCoords.getX());
+		oldRoboCoords.setY(currentRoboCoords.getY());
 	}
 	
 	private double getDegrees(Coords oldC, Coords newC) {
@@ -118,6 +126,47 @@ class Visualizer extends JPanel {
 			return 90 + Math.atan(Math.abs(dx) / Math.abs(dy)) * 180 / Math.PI;
 		}
 	}
+	
+	public void drawCovered(Graphics g) {
+		
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(Color.YELLOW);
+		Coords oldCoords = new Coords(Integer.MIN_VALUE, Integer.MIN_VALUE);
+		for (Coords coords : covered) {
+			int l = robot.getL();
+			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
+			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
+			int finalWidth = (int) (l * SCALE);
+			g2.fillOval(finalX, finalY, finalWidth, finalWidth);
+			if(oldCoords.getX()!=Integer.MIN_VALUE) {
+				
+				double degrees = getDegrees(oldCoords, coords);
+				double endX1 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+270));
+				double endY1 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+270));
+				
+				double endX2 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
+				double endY2 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
+				
+				double startX1 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
+				double startY1 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
+				
+				double startX2 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees-90));
+				double startY2 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees-90));
+								
+				Polygon p = new Polygon();
+				p.addPoint((int)endX1, (int)endY1);
+				p.addPoint((int)endX2, (int)endY2);
+				p.addPoint((int)startX1, (int)startY1);
+				p.addPoint((int)startX2, (int)startY2);
+				g.fillPolygon(p);
+			}
+			oldCoords.setX(coords.getX());
+			oldCoords.setY(coords.getY());
+		}
+
+		
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -131,10 +180,13 @@ class Visualizer extends JPanel {
 		g2d.scale(1.0, -1.0);
 
 		drawEnvironment(g);
+		drawCovered(g);
 		drawRobot(g);
 	}
 
 	public void update() {
+		currentRoboCoords = robot.getCurrentPosition();
+		covered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
 		repaint();
 	}
 }
