@@ -18,7 +18,7 @@ public class Robot {
 
 	Robot(double x, double y, Maze maze) {
 		currentPosition = new Coords(x, y);
-		currentPosition.setAngle(0);
+		currentPosition.setAngle(1);
 		this.maze = maze;
 		maze.setLength(l);
 		this.fitness = 0;
@@ -99,11 +99,11 @@ public class Robot {
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
-			double i = 6;
-			if (lastMinSensorValue < 6) {
+			double i = 10;
+			if (lastMinSensorValue < 10) {
 				i = lastMinSensorValue;
 			}
-			i /= 6.;
+			i /= 10.;
 			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
 			
