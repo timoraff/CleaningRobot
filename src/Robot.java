@@ -106,8 +106,7 @@ public class Robot {
 			//fitness += (Math.abs(x-newx)+Math.abs(y-newy)) - deltaV + vL + vR ;
 
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			// fitness+=1;
-			//updateFitness(newx, newy);
+			updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
 			currentPosition.setAngle(newtheta);
@@ -141,32 +140,14 @@ public class Robot {
 		} else {
 			double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
 			double height = GRIDSIZE / maze.getMaxY();
-			// double fromX = oldX * width;
-			// double fromY = oldY * height;
 			int toX = (int) (x * width);
 			int toY = (int) (y * height);
 			//System.out.println("grid position: x: " + toX + " y: " + toY);
 			if (!grid[toX][toY]) {
 				grid[toX][toY] = true;
-				fitness += 4;
+				fitness += 1;
 			}
 		}
-		// take a look in the grid and see how much (%) is visited
-		// update the x and y coordinates to values fitting at the grid!??
-		// search activate the single parts in the grid --> so calcuöate a route.
-		// mapping of position:
-		// double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
-		// double height = GRIDSIZE / maze.getMaxY();
-		// double fromX = oldX * width;
-		// double fromY = oldY * height;
-		// int toX = (int) (x * width);
-		// int toY = (int) (y * height);
-		// if (!grid[toX][toY]) {
-		// grid[toX][toY] = true;
-		// fitness += 10;
-		// }
-		// int xG
-		// maze.getMaxX()
 	}
 
 	public double getFitness() {

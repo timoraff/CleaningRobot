@@ -9,12 +9,12 @@ public class Main {
 	// number of evolutino steps
 	final static int ITERATIONS = 20;
 	// size of the starting population
-	final static int STARTINGPOP = 140;
+	final static int STARTINGPOP = 100;
 	// starting position for the robot
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
-	static boolean JUSTLOAD = false;
-	static boolean CONTINUETRAINING = false;
+	static boolean JUSTLOAD = true;
+	static boolean CONTINUETRAINING = true;
 
 	// just a main to execute the programm
 	public static void main(String[] args) {
@@ -87,7 +87,7 @@ public class Main {
 			System.out.println("Move: " + Arrays.toString(tmp));
 			robo.move(tmp/* fittest.calculate(robo.getSensorValues()) */);
 			try {
-				Thread.sleep(13);
+				Thread.sleep(15);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();
