@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Main {
 	// number of evolutino steps
-	final static int ITERATIONS = 40;
+	final static int ITERATIONS = 10;
 	// size of the starting population
 	final static int STARTINGPOP = 80;
 	// starting position for the robot
@@ -34,7 +34,7 @@ public class Main {
 			System.out.println("Move: " + Arrays.toString(tmp));
 			robo.move(tmp/* fittest.calculate(robo.getSensorValues()) */);
 			try {
-				Thread.sleep(10);
+				Thread.sleep(5);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();

@@ -112,7 +112,7 @@ public class NeuralNet {
 	 */
 	public void setWeight(int i, double w) {
 		int[] tmp = getIndeces(i);
-		if (tmp[0] != 0)
+		//if (tmp[0] != 0)
 			weights[tmp[0]][tmp[1]][tmp[2]] = w;
 	}
 
@@ -123,11 +123,11 @@ public class NeuralNet {
 	 */
 	public double getWeight(int i) {
 		int[] tmp = getIndeces(i);
-		if (tmp[0] != 0) {
+		//if (tmp[0] != 0) {
 			return weights[tmp[0]][tmp[1]][tmp[2]];
-		} else {
-			return 0;
-		}
+		//} else {
+		//	return 0;
+		//}
 	}
 
 	/**
@@ -138,8 +138,8 @@ public class NeuralNet {
 	public int[] getIndeces(int idx) {
 		int[] ret = new int[3];
 		int counter = 0;
-		double a = idx / LAYERSIZES[counter];
-		while (idx > 0) {
+		while (idx >= 0) {
+			double a = idx / LAYERSIZES[counter];
 			if (a >= LAYERSIZES[counter + 1]) {
 				idx -= LAYERSIZES[counter] * LAYERSIZES[counter + 1];
 				counter++;

@@ -18,7 +18,7 @@ public class Robot {
 
 	Robot(double x, double y, Maze maze) {
 		currentPosition = new Coords(x, y);
-		currentPosition.setAngle(270);
+		currentPosition.setAngle(0);
 		this.maze = maze;
 		maze.setLength(l);
 		this.fitness = 0;
@@ -33,6 +33,7 @@ public class Robot {
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
+		//System.out.println("vL: " + vL + " vR: " + vR);
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
 		double theta = currentPosition.getAngle();
@@ -49,21 +50,20 @@ public class Robot {
 			y = y + Math.sin(Math.toRadians(theta)) * vR * deltat;
 			// just move forward;
 		} else {
-			r = (l / 2) * ((vL + vR) / (vR - vL));
+			r = (l / 2.) * ((vL + vR) / (vR - vL));
 			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
 			iccX = x - r * Math.sin(Math.toRadians(theta));
 			iccY = y + r * Math.cos(Math.toRadians(theta));
-			newx = Math.cos(Math.toRadians(w * deltat)) * (x - iccX) - (Math.sin(Math.toRadians(w * deltat)) * (y - iccY)) + iccX;
-			newy = Math.sin(Math.toRadians(w * deltat)) * (x - iccX) + (Math.cos(Math.toRadians(w * deltat)) * (y - iccY)) + iccY;
+			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(Math.toRadians(w * deltat)) * (y - iccY)) + iccX;
+			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(Math.toRadians(w * deltat)) * (y - iccY)) + iccY;
 			newtheta = theta + w * deltat;
-			x = newx;
-			y = newy;
-			theta = newtheta;
+			//System.out.println("From:"+currentPosition);
+			
 		}
 
 		// TODO maybe change back to boolean return or already update position and find
 		// a way to realize if there was a collision.
-		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy));
+		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta));
 
 		if (colision) {
 			// decrease fitnesfunction
@@ -76,26 +76,24 @@ public class Robot {
 			// deltaV= difference between the signed rotation
 			// i corresponds to the distance to the next wall.
 			// V*(1-Math.sqrt(deltaV))*(1-i)
-			
+
 			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
 			double i = 100;
-			//if (lastMinSensorValue < 6) {
-				i = lastMinSensorValue;
-			//}
-			//i/=6;
-			//System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
+			// if (lastMinSensorValue < 6) {
+			i = lastMinSensorValue;
+			// }
+			// i/=6;
+			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			//fitness+=1;
-			//updateFitness(newx, newy);
+			// fitness+=1;
+			// updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
-			currentPosition.setAngle(theta);
-			
-			// direction = theta;
-			// direction has to be update too
+			currentPosition.setAngle(newtheta);
+			//System.out.println("to: "+currentPosition);
 		}
 	}
 
@@ -119,20 +117,20 @@ public class Robot {
 	}
 
 	// currently not used.
-	public void updateFitness(/*double oldX, double oldY,*/ double x, double y) {
+	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
 		// search activate the single parts in the grid --> so calcuöate a route.
 		// mapping of position:
 		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
 		double height = GRIDSIZE / maze.getMaxY();
-		//double fromX = oldX * width;
-		//double fromY = oldY * height;
-		int toX =(int) (x * width);
-		int toY = (int)(y * height);
-		if(!grid[toX][toY]) {
-			grid[toX][toY]=true;
-			fitness+=10;
+		// double fromX = oldX * width;
+		// double fromY = oldY * height;
+		int toX = (int) (x * width);
+		int toY = (int) (y * height);
+		if (!grid[toX][toY]) {
+			grid[toX][toY] = true;
+			fitness += 10;
 		}
 		// int xG
 		// maze.getMaxX()

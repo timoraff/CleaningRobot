@@ -14,7 +14,7 @@ public class Maze {
     Maze() {
         double minY;
         double minX = minY = 0.0;
-        maxX = maxY = 100.0;
+        maxX = maxY = 30.0;
         environment = new HashSet<>();
         // wall
         environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY))); //bottom line
