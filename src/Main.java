@@ -13,8 +13,8 @@ public class Main {
 	// starting position for the robot
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
-	static boolean JUSTLOAD = true;
-	static boolean CONTINUETRAINING = true;
+	static boolean JUSTLOAD = false;
+	static boolean CONTINUETRAINING = false;
 
 	// just a main to execute the programm
 	public static void main(String[] args) {
