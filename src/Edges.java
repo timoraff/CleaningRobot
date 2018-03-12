@@ -1,3 +1,6 @@
+/**
+ * @author Julian Gorfer i6168920
+ */
 public class Edges {
     private Coords from;
     private Coords to;

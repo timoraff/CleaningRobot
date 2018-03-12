@@ -1,6 +1,10 @@
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @author Julian Gorfer i6168920
+ * @author Pit Schneider i6173083
+ */
 public class Maze {
     private static Set<Edges> environment;
     private int l = 0;
@@ -104,22 +108,6 @@ public class Maze {
 //            //System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
 //        }
         return sensors;
-    }
-
-    /**
-     * getter for the environment
-     * @return set of edges
-     */
-    public Set<Edges> getEnvironment() {
-        return environment;
-    }
-
-    /**
-     * set the distance between the 2 wheels of the robot
-     * @param l distance
-     */
-    public void setLength(int l) {
-        this.l = l;
     }
 
     /**
@@ -240,6 +228,22 @@ public class Maze {
             }
         }
         return minDistance;
+    }
+
+    /**
+     * set the distance between the 2 wheels of the robot
+     * @param l distance
+     */
+    public void setLength(int l) {
+        this.l = l;
+    }
+
+    /**
+     * getter for the environment
+     * @return set of edges
+     */
+    public Set<Edges> getEnvironment() {
+        return environment;
     }
 
     /**

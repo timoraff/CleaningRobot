@@ -1,3 +1,6 @@
+/**
+ * @author Julian Gorfer i6168920
+ */
 public class Coords {
     private double x;
     private double y;
