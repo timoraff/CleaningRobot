@@ -37,7 +37,7 @@ public class Robot {
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
 		double theta = currentPosition.getAngle();
-		double deltat = 0.3;
+		double deltat = 5;
 		double w;
 		double r;
 		double iccX;
@@ -51,14 +51,17 @@ public class Robot {
 			// just move forward;
 		} else {
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
-			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
+
+			w = (vR - vL)*2*Math.PI / l; // evtl problem mit Rad und Deg?
+			//w = vR / (r+(l/2));
 			iccX = x - r * Math.sin(Math.toRadians(theta));
 			iccY = y + r * Math.cos(Math.toRadians(theta));
-			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(Math.toRadians(w * deltat)) * (y - iccY)) + iccX;
-			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(Math.toRadians(w * deltat)) * (y - iccY)) + iccY;
-			newtheta = theta + w * deltat;
-			//System.out.println("From:"+currentPosition);
-			
+			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
+			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+			newtheta = (theta + Math.toDegrees(w * deltat))%360;
+			//System.out.println(x);
+			//System.out.println(y);
+			//System.out.println(theta);
 		}
 
 		// TODO maybe change back to boolean return or already update position and find
