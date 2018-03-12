@@ -36,8 +36,8 @@ public class Robot {
 		//System.out.println("vL: " + vL + " vR: " + vR);
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
-		double theta = currentPosition.getAngle();
-		double deltat = 5;
+		double theta = Math.toRadians(currentPosition.getAngle());
+		double deltat = 0.2;
 		double w;
 		double r;
 		double iccX;
@@ -46,19 +46,19 @@ public class Robot {
 		double newy = 0;
 		double newtheta = 0;
 		if (vR == vL) {
-			x = x + Math.cos(Math.toRadians(theta)) * vR * deltat;
-			y = y + Math.sin(Math.toRadians(theta)) * vR * deltat;
+			x = x + Math.cos(theta) * vR * deltat;
+			y = y + Math.sin(theta) * vR * deltat;
 			// just move forward;
 		} else {
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
 
-			w = (vR - vL)*2*Math.PI / l; // evtl problem mit Rad und Deg?
+			w = (vR - vL) / l; // evtl problem mit Rad und Deg?
 			//w = vR / (r+(l/2));
-			iccX = x - r * Math.sin(Math.toRadians(theta));
-			iccY = y + r * Math.cos(Math.toRadians(theta));
+			iccX = x - r * Math.sin(theta);
+			iccY = y + r * Math.cos(theta);
 			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
 			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
-			newtheta = (theta + Math.toDegrees(w * deltat))%360;
+			newtheta = Math.toDegrees(theta + w * deltat)%360;
 			//System.out.println(x);
 			//System.out.println(y);
 			//System.out.println(theta);
@@ -68,9 +68,21 @@ public class Robot {
 		// a way to realize if there was a collision.
 		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta));
 
-		if (colision) {
+		if (colision || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() || newy > maze.getMaxY()) {
 			// decrease fitnesfunction
-			fitness -= COLISIONDECREASE;
+			fitness -= 20*COLISIONDECREASE;
+			colision = false;
+			colision = maze.checkForCollision(currentPosition, new Coords(newx, y, newtheta));
+			if (colision) {
+				currentPosition.setX(x);
+				currentPosition.setY(newy);
+				currentPosition.setAngle(newtheta);
+			} else {
+				currentPosition.setX(newx);
+				currentPosition.setY(y);
+				currentPosition.setAngle(newtheta);
+			}
+			colision = false;
 		} else {
 			// alternative fitness function:
 			// updateFitness(x,y); -> maybe also old x and y
@@ -90,7 +102,7 @@ public class Robot {
 			// }
 			// i/=6;
 			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
-			fitness += v * (1 - Math.sqrt(deltaV)) * i;
+			fitness += v * 3*(1 - Math.sqrt(deltaV)) * i;
 			// fitness+=1;
 			// updateFitness(newx, newy);
 			currentPosition.setX(newx);

@@ -15,7 +15,7 @@ public class Maze {
      */
     Maze() {
         minX = minY = 0.0;
-        maxX = maxY = 20.0;
+        maxX = maxY = 100.0;
         environment = new HashSet<>();
 
         // wall
