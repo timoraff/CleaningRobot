@@ -33,6 +33,7 @@ public class Robot {
 		// change vL and vR to values from -1to 1
 		double vL = (velocity[0] - 0.5) * 2;
 		double vR = (velocity[1] - 0.5) * 2;
+		//System.out.println("vL: " + vL + " vR: " + vR);
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
 		double theta = currentPosition.getAngle();
@@ -50,6 +51,7 @@ public class Robot {
 			// just move forward;
 		} else {
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
+
 			w = (vR - vL)*2*Math.PI / l; // evtl problem mit Rad und Deg?
 			//w = vR / (r+(l/2));
 			iccX = x - r * Math.sin(Math.toRadians(theta));
@@ -57,9 +59,6 @@ public class Robot {
 			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
 			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
 			newtheta = (theta + Math.toDegrees(w * deltat))%360;
-			x = newx;
-			y = newy;
-			theta = newtheta;
 			//System.out.println(x);
 			//System.out.println(y);
 			//System.out.println(theta);
@@ -67,7 +66,7 @@ public class Robot {
 
 		// TODO maybe change back to boolean return or already update position and find
 		// a way to realize if there was a collision.
-		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy));
+		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta));
 
 		if (colision) {
 			// decrease fitnesfunction
@@ -80,26 +79,24 @@ public class Robot {
 			// deltaV= difference between the signed rotation
 			// i corresponds to the distance to the next wall.
 			// V*(1-Math.sqrt(deltaV))*(1-i)
-			
+
 			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
 			double deltaV = Math.abs(vL - vR);
 			// wanna get away from the walls...
 			// limit relevant wall distances to 6?
 			double i = 100;
-			//if (lastMinSensorValue < 6) {
-				i = lastMinSensorValue;
-			//}
-			//i/=6;
-			//System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
+			// if (lastMinSensorValue < 6) {
+			i = lastMinSensorValue;
+			// }
+			// i/=6;
+			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			//fitness+=1;
-			//updateFitness(newx, newy);
+			// fitness+=1;
+			// updateFitness(newx, newy);
 			currentPosition.setX(newx);
 			currentPosition.setY(newy);
-			currentPosition.setAngle(theta);
-			
-			// direction = theta;
-			// direction has to be update too
+			currentPosition.setAngle(newtheta);
+			//System.out.println("to: "+currentPosition);
 		}
 	}
 
@@ -123,20 +120,20 @@ public class Robot {
 	}
 
 	// currently not used.
-	public void updateFitness(/*double oldX, double oldY,*/ double x, double y) {
+	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
 		// take a look in the grid and see how much (%) is visited
 		// update the x and y coordinates to values fitting at the grid!??
 		// search activate the single parts in the grid --> so calcuöate a route.
 		// mapping of position:
 		double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
 		double height = GRIDSIZE / maze.getMaxY();
-		//double fromX = oldX * width;
-		//double fromY = oldY * height;
-		int toX =(int) (x * width);
-		int toY = (int)(y * height);
-		if(!grid[toX][toY]) {
-			grid[toX][toY]=true;
-			fitness+=10;
+		// double fromX = oldX * width;
+		// double fromY = oldY * height;
+		int toX = (int) (x * width);
+		int toY = (int) (y * height);
+		if (!grid[toX][toY]) {
+			grid[toX][toY] = true;
+			fitness += 10;
 		}
 		// int xG
 		// maze.getMaxX()

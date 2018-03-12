@@ -8,6 +8,11 @@ public class Coords {
         this.setY(y);
         this.angle = 0;
     }
+    Coords(double x, double y, double a) {
+        this.setX(x);
+        this.setY(y);
+        this.angle = a;
+    }
 
     public double getX() {
         return x;
