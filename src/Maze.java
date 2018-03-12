@@ -4,18 +4,20 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private int l = 0;
-    private double maxY;
-    private double maxX;
+    private double minY, maxY;
+    private double minX, maxX;
 
     /**
-     * contains the coordinate system, including the walls
-     * also takes care about displaying the maze and robot movement
+     * Constructor for the maze.
+     * sets the minimum and maximum coordinates of the environment
+     * it defines obstacles
+     * only horizontal and vertical obstacles until now
      */
     Maze() {
-        double minY;
-        double minX = minY = 0.0;
-        maxX = maxY = 100.0;
+        minX = minY = 0.0;
+        maxX = maxY = 20.0;
         environment = new HashSet<>();
+
         // wall
         environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY))); //bottom line
         environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY))); //top line
@@ -23,14 +25,14 @@ public class Maze {
         environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY))); //left line
 
         // obstacle
-        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(maxX - 6, minY + 6))); //bottom line
-        environment.add(new Edges(new Coords(maxX - 6, minY + 6), new Coords(maxX - 6, maxY - 6))); //right line
-        environment.add(new Edges(new Coords(maxX - 6, maxY - 6), new Coords(minX + 6, maxY - 6))); //top line
-        environment.add(new Edges(new Coords(minX + 6, minY + 6), new Coords(minX + 6, maxY - 6))); //left line
+        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), minY + (maxY / 5)))); //bottom line
+        environment.add(new Edges(new Coords(maxX - (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), maxY - (maxY / 5)))); //right line
+        environment.add(new Edges(new Coords(maxX - (maxX / 5), maxY - (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //top line
+        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //left line
     }
 
     /**
-     * check for collisions
+     * check for collisions between the robot and obstacles (walls)
      * @param oldPos old position of the robot
      * @param newPos new position of the robot
      * @return  true if collision is detected,
@@ -47,7 +49,7 @@ public class Maze {
         Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
         Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
         double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-        return !(!(distance > castRay(posLeft, degrees)) && !(distance > castRay(posRight, degrees)));
+        return distance > castRay(posLeft, degrees) || distance > castRay(posRight, degrees);
     }
 
     /**
@@ -235,5 +237,13 @@ public class Maze {
 	public double getMaxX() {
 		return maxX;
 	}
+
+    public double getMinY() {
+        return minY;
+    }
+
+    public double getMinX() {
+        return minX;
+    }
     
 }
