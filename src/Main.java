@@ -2,7 +2,7 @@ import java.util.Arrays;
 
 public class Main {
 	// number of evolutino steps
-	final static int ITERATIONS = 10;
+	final static int ITERATIONS = 40;
 	// size of the starting population
 	final static int STARTINGPOP = 80;
 	// starting position for the robot
