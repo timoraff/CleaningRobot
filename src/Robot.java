@@ -1,7 +1,12 @@
 import java.util.Arrays;
 
 import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
-
+/**
+ * 
+ * @author Rouven Bonke, Timo Raff
+ *
+ *class for calculating position updates and the fitness functino
+ */
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
@@ -82,11 +87,6 @@ public class Robot {
 			}
 			colision = false;
 		} else {
-			//when there is no colision fitness function and currentPosition get updated 
-			
-			// alternative fitness function:
-			// updateFitness(x,y); -> maybe also old x and y
-			// calculate a fitnesupdate
 			// V= average of unsigned rotation
 			// deltaV= difference between the signed rotation
 			// i corresponds to the distance to the next wall.
@@ -94,17 +94,11 @@ public class Robot {
 
 			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
 			double deltaV = Math.abs(vL - vR);
-			// wanna get away from the walls...
-			// limit relevant wall distances to 6?
 			double i = 10;
 			if (lastMinSensorValue < 10) {
 				i = lastMinSensorValue;
 			}
 			i /= 10.;
-			// System.out.println("V: " +v +" deltaV= " +deltaV+" i:"+i);
-
-			//fitness += (Math.abs(x-newx)+Math.abs(y-newy)) - deltaV + vL + vR ;
-
 			fitness += v * (1 - Math.sqrt(deltaV)) * i;
 			updateFitness(newx, newy);
 			currentPosition.setX(newx);
@@ -133,7 +127,6 @@ public class Robot {
 		return sensors;
 	}
 
-	// currently not used.
 	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
 		if (x < 0 || y < 0 || y > maze.getMaxY() || x > maze.getMaxX()) {
 			fitness -= COLISIONDECREASE;

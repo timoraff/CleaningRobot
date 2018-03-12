@@ -7,14 +7,21 @@ import java.util.Arrays;
 
 public class Main {
 	// number of evolutino steps
-	final static int ITERATIONS = 20;
+	final static int ITERATIONS = 100;
 	// size of the starting population
 	final static int STARTINGPOP = 100;
 	// starting position for the robot
+	
 	final static double STARTINGX = 2;
 	final static double STARTINGY = 2;
-	static boolean JUSTLOAD = true;
-	static boolean CONTINUETRAINING = true;
+	/**
+	 * set to true if you just want to run the agent with a recently created NN
+	 */
+	static boolean JUSTLOAD = false;
+	/**
+	 * set to true if you want to continue on the recently saved dataset
+	 */
+	static boolean CONTINUETRAINING = false;
 
 	// just a main to execute the programm
 	public static void main(String[] args) {
@@ -30,19 +37,19 @@ public class Main {
 			}
 
 			try {
-				FileOutputStream fileOut = new FileOutputStream("/tmp/employee.ser");
+				FileOutputStream fileOut = new FileOutputStream("/tmp/population.ser");
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(pop);
 				out.close();
 				fileOut.close();
-				System.out.printf("Serialized data is saved in /tmp/employee.ser");
+				System.out.printf("Serialized data is saved in /tmp/population.ser");
 			} catch (IOException i) {
 				i.printStackTrace();
 			}
 		}
 		Population p;
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/employee.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/population.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			p = (Population) in.readObject();
 			in.close();
@@ -51,7 +58,7 @@ public class Main {
 			i.printStackTrace();
 			return;
 		} catch (ClassNotFoundException c) {
-			System.out.println("Employee class not found");
+			System.out.println("population class not found");
 			c.printStackTrace();
 			return;
 		}
@@ -63,12 +70,12 @@ public class Main {
 			}
 
 			try {
-				FileOutputStream fileOut = new FileOutputStream("/tmp/employee.ser");
+				FileOutputStream fileOut = new FileOutputStream("/tmp/population.ser");
 				ObjectOutputStream out = new ObjectOutputStream(fileOut);
 				out.writeObject(p);
 				out.close();
 				fileOut.close();
-				System.out.printf("Serialized data is saved in /tmp/employee.ser");
+				System.out.printf("Serialized data is saved in /tmp/population.ser");
 			} catch (IOException i) {
 				i.printStackTrace();
 			}
@@ -87,7 +94,7 @@ public class Main {
 			System.out.println("Move: " + Arrays.toString(tmp));
 			robo.move(tmp/* fittest.calculate(robo.getSensorValues()) */);
 			try {
-				Thread.sleep(15);
+				Thread.sleep(18);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();

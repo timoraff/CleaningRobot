@@ -165,6 +165,7 @@ public class NeuralNet implements Serializable{
 
 	/**
 	 * tests a robot on this neural network. 
+	 * starting from 4 different position (currently fixed)
 	 */
 	public void test() {
 		// TODO change starting postions of the robots
