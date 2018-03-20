@@ -250,16 +250,28 @@ public class Maze {
      *          if there are at most 1 beacon in range return null (TBD)
      */
     public Coords intersectionPointOfBeacons(Coords RobotPos) {
+    // public Coords intersectionPointOfBeacons() {
 
         // calculate first the number of beacons in range
         int numberOfBeaconsInRange = 0;
         Coords[] beaconsInRange = new Coords[beacons.size()];
-        for(Coords coords : beacons){
-//            if(Math.sqrt(Math.pow(coords.getX()-robotsCurrentPosition.getX(),2) + Math.pow(coords.getY() - robotsCurrentPosition.getY(), 2)) <= rangeOfBeacons) {
-            if(Math.sqrt(Math.pow(coords.getX()-RobotPos.getX(),2) + Math.pow(coords.getY() - RobotPos.getY(), 2)) <= rangeOfBeacons) {
-                //add the beacons to the list
-                beaconsInRange[numberOfBeaconsInRange] = coords;
-                numberOfBeaconsInRange++;
+        for(Coords beacon : beacons){
+            double d = Math.sqrt(Math.pow(beacon.getX()-RobotPos.getX(),2) + Math.pow(beacon.getY() - RobotPos.getY(), 2));
+            // double d = Math.sqrt(Math.pow(coords.getX()-robotsCurrentPosition.getX(),2) + Math.pow(coords.getY() - robotsCurrentPosition.getY(), 2));
+            if(d <= rangeOfBeacons) {
+                double angle = Math.toDegrees(Math.atan2(beacon.getY() - RobotPos.getY(), beacon.getX() - RobotPos.getX()));
+                // double angle = Math.toDegrees(Math.atan2(beacon.getY() - robotsCurrentPosition.getY(), beacon.getX() - robotsCurrentPosition.getX()));
+                if (angle < 0) {
+                    angle = (-angle) % 360;
+                } else {
+                    angle = angle % 360;
+                }
+                if(castRay(RobotPos, angle) >= d) {
+                // if(castRay(robotsCurrentPosition, angle) >= d) {
+                    //add the beacons to the list
+                    beaconsInRange[numberOfBeaconsInRange] = beacon;
+                    numberOfBeaconsInRange++;
+                }
             }
         }
 
@@ -367,5 +379,12 @@ public class Maze {
     public double getMinX() {
         return minX;
     }
-    
+
+    /**
+     * setter for the robots position
+     * @param robotsCurrentPosition pos of robot
+     */
+    public void setRobotsCurrentPosition(Coords robotsCurrentPosition) {
+        this.robotsCurrentPosition = robotsCurrentPosition;
+    }
 }
