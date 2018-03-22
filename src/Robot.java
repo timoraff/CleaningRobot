@@ -11,26 +11,24 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	private final static int COLISIONDECREASE = 10;
 	private int l = 2; // distance between the 2 wheels
 	private Coords currentPosition;
 	private Maze maze;
-	private double fitness;
-	private double lastMinSensorValue;
-	// for fitness calculation:
-	boolean[][] grid;
-	final static int GRIDSIZE = 100;
+	
+	//for the 2nd assignement
+	Coords expectation;
+	Coords variance;
+	
 	Visualizer visulizer;
 
 	Robot(double x, double y, Maze maze) {
 		currentPosition = new Coords(x, y);
 		currentPosition.setAngle(1);
+		//init with known position. current position is not needed anymore ? maze should know the exact position of the robot;
+		expectation= new Coords(x, y);
+		expectation.setAngle(1);
 		this.maze = maze;
 		maze.setLength(l);
-		this.fitness = 0;
-		this.lastMinSensorValue = 0;
-
-		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
 	}
 
@@ -46,13 +44,14 @@ public class Robot {
 		double vR = Math.random();
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
+		double theta = Math.toRadians(currentPosition.getAngle());
 		double newx = 0;
 		double newy = 0;
 		double newtheta = 0;
 		// for using cos and sin we need Radians
 		boolean colision = true;
 		while (colision) {
-			double theta = Math.toRadians(currentPosition.getAngle());
+			
 			double deltat = 0.3;
 			double w;
 			double r;
@@ -77,6 +76,10 @@ public class Robot {
 			if (colision)
 				currentPosition.setAngle(Math.random() * 360);
 		}
+		//update belief. 
+		//not sure what exactly the action is
+		//TODO inset method for triangulation here.
+		kalman_filter(new Coords(0, 0, 0), new Coords(newx-x, newy-y, newtheta-theta));
 		currentPosition.setX(newx);
 		currentPosition.setY(newy);
 		currentPosition.setAngle(newtheta);
@@ -86,7 +89,13 @@ public class Robot {
 	
 	}
 
-	public void kalman_filter() {
+	public void kalman_filter(Coords measurements, Coords action) {
+		//measurements = z
+		//position = u
+		/*
+		 * berechnung nach folien ausführen
+		 * einfach die lokelen objekte (expectation und variance) überschreiben		 *  
+		 */
 	}
 
 	public double[] getSensorValues() {
@@ -94,38 +103,11 @@ public class Robot {
 		// direction.
 		double[] sensors = new double[15];
 		double[] tmp = maze.calculateSensorValues(currentPosition);
-		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
-		lastMinSensorValue = sensors[0];
-		// dont take last 3 inputs in account --> these are last output + orientation
-		for (int i = 1; i < sensors.length - 3; i++) {
-			if (sensors[i] < lastMinSensorValue) {
-				lastMinSensorValue = sensors[i];
-			}
-		}
+		System.arraycopy(tmp, 0, sensors, 0, tmp.length);		
 		sensors[12] = currentPosition.getX();
 		sensors[13] = currentPosition.getY();
 		sensors[14] = currentPosition.getAngle();
 		return sensors;
-	}
-
-	public void updateFitness(/* double oldX, double oldY, */ double x, double y) {
-		if (x < 0 || y < 0 || y > maze.getMaxY() || x > maze.getMaxX()) {
-			fitness -= COLISIONDECREASE;
-		} else {
-			double width = GRIDSIZE / maze.getMaxX();// is the width of onr cell
-			double height = GRIDSIZE / maze.getMaxY();
-			int toX = (int) (x * width);
-			int toY = (int) (y * height);
-			// System.out.println("grid position: x: " + toX + " y: " + toY);
-			if (!grid[toX][toY]) {
-				grid[toX][toY] = true;
-				fitness += 1;
-			}
-		}
-	}
-
-	public double getFitness() {
-		return fitness;
 	}
 
 	public int getL() {
