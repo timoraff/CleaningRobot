@@ -49,23 +49,31 @@ public class Maze {
 
     /**
      * check for collisions between the robot and obstacles (walls)
-     * @param oldPos old position of the robot
-     * @param newPos new position of the robot
+//     * @param oldPos old position of the robot
+//     * @param newPos new position of the robot
      * @return  true if collision is detected,
      *          false if no collision is detected
      */
-    public boolean checkForCollision(Coords oldPos, Coords newPos) {
-        double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
-        double degrees = Math.toDegrees(angle);
-        if (degrees < 0)
-            degrees += 360;
-        else if (degrees > 360)
-            degrees -= 360;
-
-        Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
-        Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
-        double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-        return distance > castRay(posLeft, degrees) || distance > castRay(posRight, degrees);
+    public boolean checkForCollision() {
+//    public boolean checkForCollision(Coords oldPos, Coords newPos) {
+//        double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
+//        double degrees = Math.toDegrees(angle);
+//        if (degrees < 0)
+//            degrees += 360;
+//        else if (degrees > 360)
+//            degrees -= 360;
+//
+//        Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
+//        Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
+//        double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
+//        return distance > castRay(posLeft, degrees) || distance > castRay(posRight, degrees);
+        for (Edges edge : environment) {
+//            D=r^2*[(b_1 -a_1)^2+(b_2 - a_2)^2]-[a_1*(b_2 -a_2) -a_2*(b_1 -a_1)]^2
+            double D = Math.pow(l / 2, 2) * (Math.pow(edge.getTo().getX() - edge.getFrom().getX(), 2) + Math.pow(edge.getTo().getY() - edge.getFrom().getY(), 2)) - Math.pow(edge.getFrom().getX() * (edge.getTo().getY() - edge.getFrom().getY()) - edge.getFrom().getY() * (edge.getTo().getX() - edge.getFrom().getX()), 2);
+            if (D >= 0)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -379,5 +387,13 @@ public class Maze {
      */
     public void setRobotsCurrentPosition(Coords robotsCurrentPosition) {
         this.robotsCurrentPosition = robotsCurrentPosition;
+    }
+
+    /**
+     * getter for the robots position
+     * @return robotsCurrentPosition pos of robot
+     */
+    public Coords getRobotsCurrentPosition() {
+        return robotsCurrentPosition;
     }
 }
