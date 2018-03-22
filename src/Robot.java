@@ -1,11 +1,12 @@
 import java.util.Arrays;
 
 import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
+
 /**
  * 
  * @author Rouven Bonke, Timo Raff
  *
- *class for calculating position updates and the fitness functino
+ *         class for calculating position updates and the fitness functino
  */
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
@@ -32,80 +33,60 @@ public class Robot {
 		grid = new boolean[GRIDSIZE][GRIDSIZE];
 
 	}
+
 	public void setPosition(int x, int y) {
 		currentPosition.setX(x);
 		currentPosition.setY(y);
 	}
 
-	public void move(double[] velocity) {
+	public void move() {
 		// gets information from the NN Vr and Vl
 		// change vL and vR to values from -1to 1
-		double vL = (velocity[0] - 0.5) * 2;
-		double vR = (velocity[1] - 0.5) * 2;
+		double vL = Math.random();
+		double vR = Math.random();
 		double x = currentPosition.getX();
 		double y = currentPosition.getY();
-		//for using cos and sin we need Radians
-		double theta = Math.toRadians(currentPosition.getAngle());
-		double deltat = 0.3;
-		double w;
-		double r;
-		double iccX;
-		double iccY;
 		double newx = 0;
 		double newy = 0;
 		double newtheta = 0;
-		//calculating new position (newx and newy) using the formulas discussed in class
-		if (vR == vL) {
-			newx = x + Math.cos(theta) * vR * deltat;
-			newy = y + Math.sin(theta) * vR * deltat;
-			// just move forward;
-		} else {
-			r = (l / 2.) * ((vL + vR) / (vR - vL));
-			w = (vR - vL) / l; 
-			iccX = x - r * Math.sin(theta);
-			iccY = y + r * Math.cos(theta);
-			newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
-			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
-			newtheta = Math.toDegrees(theta + w * deltat)%360;
-		}
-		boolean colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta));
-
-		if (colision || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() || newy > maze.getMaxY()) {
-			// decrease fitnesfunction
-			colision = false;
-			fitness -= COLISIONDECREASE;
-			//check if colision in x or y direction for position after colision. Theta also changes after colision
-			colision = maze.checkForCollision(currentPosition, new Coords(newx, y, newtheta));
-			if (colision) {
-				currentPosition.setX(x);
-				currentPosition.setY(newy);
-				currentPosition.setAngle(theta + 37.5);
+		// for using cos and sin we need Radians
+		boolean colision = true;
+		while (colision) {
+			double theta = Math.toRadians(currentPosition.getAngle());
+			double deltat = 0.3;
+			double w;
+			double r;
+			double iccX;
+			double iccY;
+			// calculating new position (newx and newy) using the formulas discussed in
+			// class
+			if (vR == vL) {
+				newx = x + Math.cos(theta) * vR * deltat;
+				newy = y + Math.sin(theta) * vR * deltat;
+				// just move forward;
 			} else {
-				currentPosition.setX(newx);
-				currentPosition.setAngle(theta + 37.5);
-				currentPosition.setY(y);
+				r = (l / 2.) * ((vL + vR) / (vR - vL));
+				w = (vR - vL) / l;
+				iccX = x - r * Math.sin(theta);
+				iccY = y + r * Math.cos(theta);
+				newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
+				newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+				newtheta = Math.toDegrees(theta + w * deltat) % 360;
 			}
-			colision = false;
-		} else {
-			// V= average of unsigned rotation
-			// deltaV= difference between the signed rotation
-			// i corresponds to the distance to the next wall.
-			// V*(1-Math.sqrt(deltaV))*(1-i)
-
-			double v = (Math.abs(vL) + Math.abs(vR)) / 2;
-			double deltaV = Math.abs(vL - vR);
-			double i = 10;
-			if (lastMinSensorValue < 10) {
-				i = lastMinSensorValue;
-			}
-			i /= 10.;
-			fitness += v * (1 - Math.sqrt(deltaV)) * i;
-			updateFitness(newx, newy);
-			currentPosition.setX(newx);
-			currentPosition.setY(newy);
-			currentPosition.setAngle(newtheta);
-			// System.out.println("to: "+currentPosition);
+			colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta))|| newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||newy > maze.getMaxY();
+			if (colision)
+				currentPosition.setAngle(Math.random() * 360);
 		}
+		currentPosition.setX(newx);
+		currentPosition.setY(newy);
+		currentPosition.setAngle(newtheta);
+		return;/*
+						 * || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||
+						 * newy > maze.getMaxY()*/
+	
+	}
+
+	public void kalman_filter() {
 	}
 
 	public double[] getSensorValues() {
@@ -135,7 +116,7 @@ public class Robot {
 			double height = GRIDSIZE / maze.getMaxY();
 			int toX = (int) (x * width);
 			int toY = (int) (y * height);
-			//System.out.println("grid position: x: " + toX + " y: " + toY);
+			// System.out.println("grid position: x: " + toX + " y: " + toY);
 			if (!grid[toX][toY]) {
 				grid[toX][toY] = true;
 				fitness += 1;
