@@ -200,7 +200,7 @@ class Visualizer extends JPanel {
 
 		// draw everything
 		drawEnvironment(g);
-		drawCovered(g);
+		//drawCovered(g);
 		drawRobot(g);
 	}
 

@@ -32,10 +32,10 @@ public class Main {
 
 		// let the fittest model play for some time --> for seeing a result..
 		for (int i = 0; i < 200000; i++) {
-			double []tmp= new double[] {1,2,3};
-			robo.move(tmp);
+			//double []tmp= new double[] {1,2,3};
+			robo.move();
 			try {
-				Thread.sleep(18);
+				Thread.sleep(5);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();
