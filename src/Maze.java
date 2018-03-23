@@ -9,11 +9,11 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private static Set<Coords> beacons;
-    private int l = 0;
+    private double l = 0;
     private double minY, maxY;
     private double minX, maxX;
     private Coords robotsCurrentPosition;
-    private double rangeOfBeacons = 100;
+    private double rangeOfBeacons;
 
     /**
      * Constructor for the maze.
@@ -21,10 +21,14 @@ public class Maze {
      * it defines obstacles
      * only horizontal and vertical obstacles until now
      */
-    Maze() {
-        minX = minY = 0.0;
-        maxX = 40;
-        maxY = 20.0;
+    Maze(double minX, double minY, double maxX, double maxY, double lengthOfRobot, double rangeOfBeacons) {
+        this.minX = minX;
+        this.minY = minY;
+        this.maxX =maxX;
+        this.maxY = maxY;
+        this.l = lengthOfRobot;
+        this.rangeOfBeacons = rangeOfBeacons;
+
         environment = new HashSet<>();
         beacons = new HashSet<>();
 
