@@ -282,20 +282,20 @@ public class Maze {
      * @return set of coordinates of the beacons in range and sight of the robot
      *
      */
-    public Set<Coords> beaconsInRange (Coords RobotPos) {
+    public Set<Coords> beaconsInRange (Coords robotPos) {
 
         // calculate first the number of beacons in range
         Set<Coords> beaconsInRange = new HashSet<>();
         for(Coords beacon : beacons){
-            double d = Math.sqrt(Math.pow(beacon.getX()-RobotPos.getX(),2) + Math.pow(beacon.getY() - RobotPos.getY(), 2));
+            double d = Math.sqrt(Math.pow(beacon.getX()-robotPos.getX(),2) + Math.pow(beacon.getY() - robotPos.getY(), 2));
             if(d <= rangeOfBeacons) {
-                double angle = Math.toDegrees(Math.atan2(beacon.getY() - RobotPos.getY(), beacon.getX() - RobotPos.getX()));
+                double angle = Math.toDegrees(Math.atan2(beacon.getY() - robotPos.getY(), beacon.getX() - robotPos.getX()));
                 if (angle < 0) {
                     angle = (-angle) % 360;
                 } else {
                     angle = angle % 360;
                 }
-                if(castRay(RobotPos, angle) >= d) {
+                if(castRay(robotPos, angle) >= d) {
                     //add the beacons to the list
                     beaconsInRange.add(beacon);
                 }

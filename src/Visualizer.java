@@ -17,13 +17,15 @@ class Visualizer extends JPanel {
 	private Robot robot;
 	private int frameWidth;
 	private int frameHeight;
+	private double l;
 	private JFrame frame;
 	private Coords currentRoboCoords = new Coords(0, 0);
 	private Coords oldRoboCoords = new Coords(0, 0);
 	private ArrayList<Coords> covered = new ArrayList<>(); // saves all visited positions of the robot
 
-	public Visualizer(Maze maze, Robot robot) {
+	public Visualizer(Maze maze, Robot robot, double l) {
 
+		this.l = l;
 		this.maze = maze;
 		this.robot = robot;
 		createFrame();
@@ -91,7 +93,6 @@ class Visualizer extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g.setColor(Color.RED);
-		int l = robot.getL();
 		int finalX = (int) (BORDER + (currentRoboCoords.getX() - l/2.0) * SCALE);
 		int finalY = (int) (BORDER + (currentRoboCoords.getY() - l/2.0) * SCALE);
 		int finalWidth = (int) (l * SCALE);
@@ -138,6 +139,18 @@ class Visualizer extends JPanel {
 		}
 	}
 	
+	public void drawBeacons(Graphics g) {
+		
+		Graphics2D g2 = (Graphics2D) g;
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		for (Coords beacon : maze.beaconsInRange(new Coords(0,0))) {
+//			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
+//			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
+//			int finalWidth = (int) (l * SCALE);
+		}
+	}
+	
 	// trace of robot
 	public void drawCovered(Graphics g) {
 		
@@ -149,7 +162,6 @@ class Visualizer extends JPanel {
 		// for every past robot position
 		for (Coords coords : covered) {
 			
-			int l = robot.getL();
 			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
 			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
 			int finalWidth = (int) (l * SCALE);
@@ -200,6 +212,7 @@ class Visualizer extends JPanel {
 
 		// draw everything
 		drawEnvironment(g);
+		drawBeacons(g);
 		//drawCovered(g);
 		drawRobot(g);
 	}

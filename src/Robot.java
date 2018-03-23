@@ -1,7 +1,5 @@
 import java.util.Arrays;
 
-import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
-
 /**
  * 
  * @author Rouven Bonke, Timo Raff
@@ -11,7 +9,7 @@ import com.sun.xml.internal.bind.v2.model.util.ArrayInfoUtil;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	private int l = 2; // distance between the 2 wheels
+	private double l = 2; // distance between the 2 wheels
 	private Coords currentPosition;
 	private Maze maze;
 	
@@ -21,14 +19,14 @@ public class Robot {
 	
 	Visualizer visulizer;
 
-	Robot(double x, double y, Maze maze) {
+	Robot(double x, double y, Maze maze, double l) {
+		this.l = l;
 		currentPosition = new Coords(x, y);
 		currentPosition.setAngle(1);
 		//init with known position. current position is not needed anymore ? maze should know the exact position of the robot;
 		expectation= new Coords(x, y);
 		expectation.setAngle(1);
 		this.maze = maze;
-		maze.setLength(l);
 
 	}
 
@@ -72,7 +70,7 @@ public class Robot {
 				newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
 				newtheta = Math.toDegrees(theta + w * deltat) % 360;
 			}
-			colision = maze.checkForCollision(currentPosition, new Coords(newx, newy, newtheta))|| newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||newy > maze.getMaxY();
+			colision = maze.checkForCollision(currentPosition)|| newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||newy > maze.getMaxY();
 			if (colision)
 				currentPosition.setAngle(Math.random() * 360);
 		}
@@ -108,10 +106,6 @@ public class Robot {
 		sensors[13] = currentPosition.getY();
 		sensors[14] = currentPosition.getAngle();
 		return sensors;
-	}
-
-	public int getL() {
-		return l;
 	}
 
 	public void setVisualizer(Visualizer visulizer) {
