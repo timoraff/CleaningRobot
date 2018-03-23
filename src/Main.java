@@ -15,6 +15,8 @@ public class Main {
 	final static double STARTINGY = 2;
 	// diamter of the robot
 	final static double ROBOTDIAMETER = 2;
+	// beacon range
+	final static double BEACONRANGE = 10;
 	/**
 	 * set to true if you just want to run the agent with a recently created NN
 	 */
@@ -26,9 +28,9 @@ public class Main {
 
 	// just a main to execute the programm
 	public static void main(String[] args) {
-		Maze maze = new Maze(0, 0, 40, 20, ROBOTDIAMETER, 100);
+		Maze maze = new Maze(0, 0, 40, 20, ROBOTDIAMETER, BEACONRANGE);
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze, ROBOTDIAMETER);
-		Visualizer visualizer = new Visualizer(maze, robo, ROBOTDIAMETER);
+		Visualizer visualizer = new Visualizer(maze, robo, ROBOTDIAMETER, BEACONRANGE);
 		robo.setVisualizer(visualizer);
 
 		// let the fittest model play for some time --> for seeing a result..

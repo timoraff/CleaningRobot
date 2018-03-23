@@ -12,20 +12,22 @@ import java.awt.Polygon;
 class Visualizer extends JPanel {
 
 	private static final double BORDER = 100.0; // border between start of the window and maze (all 4 sides)
-	private static final double SCALE = 6.0; // everything is scaled according to this constant
+	private static final double SCALE = 10.0; // everything is scaled according to this constant
 	private Maze maze;
 	private Robot robot;
 	private int frameWidth;
 	private int frameHeight;
 	private double l;
+	private double beaconRange;
 	private JFrame frame;
 	private Coords currentRoboCoords = new Coords(0, 0);
 	private Coords oldRoboCoords = new Coords(0, 0);
 	private ArrayList<Coords> covered = new ArrayList<>(); // saves all visited positions of the robot
 
-	public Visualizer(Maze maze, Robot robot, double l) {
+	public Visualizer(Maze maze, Robot robot, double l, double beaconRange) {
 
 		this.l = l;
+		this.beaconRange = beaconRange;
 		this.maze = maze;
 		this.robot = robot;
 		createFrame();
@@ -144,10 +146,15 @@ class Visualizer extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		for (Coords beacon : maze.beaconsInRange(new Coords(0,0))) {
-//			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
-//			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
-//			int finalWidth = (int) (l * SCALE);
+		for (Coords beacon : maze.beaconsInRange(new Coords(20,10))) {
+			int finalX = (int) (BORDER + (beacon.getX() - beaconRange) * SCALE);
+			int finalY = (int) (BORDER + (beacon.getY() - beaconRange) * SCALE);
+			int finalWidth = (int) (beaconRange*2 * SCALE);
+			g2.setComposite(AlphaComposite.SrcOver.derive(0.2f));
+			g2.setColor(Color.RED);
+			g2.fillOval(finalX, finalY, finalWidth, finalWidth);
+			g2.setComposite(AlphaComposite.SrcOver.derive(1.0f));
+
 		}
 	}
 	
