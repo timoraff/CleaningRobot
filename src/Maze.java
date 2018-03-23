@@ -49,30 +49,47 @@ public class Maze {
 
     /**
      * check for collisions between the robot and obstacles (walls)
-//     * @param oldPos old position of the robot
-//     * @param newPos new position of the robot
+     * @param position new position of the robot
      * @return  true if collision is detected,
      *          false if no collision is detected
      */
-    public boolean checkForCollision() {
-//    public boolean checkForCollision(Coords oldPos, Coords newPos) {
-//        double angle = Math.atan2(newPos.getY() - oldPos.getY(), newPos.getX() - oldPos.getX());
-//        double degrees = Math.toDegrees(angle);
-//        if (degrees < 0)
-//            degrees += 360;
-//        else if (degrees > 360)
-//            degrees -= 360;
-//
-//        Coords posLeft = new Coords(oldPos.getX() + l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() + l/2 * Math.sin(Math.toRadians(degrees + 90)));
-//        Coords posRight = new Coords(oldPos.getX() - l/2 * Math.cos(Math.toRadians(degrees + 90)), oldPos.getY() - l/2 * Math.sin(Math.toRadians(degrees + 90)));
-//        double distance = Math.sqrt(Math.pow(newPos.getX() - oldPos.getX(), 2) + Math.pow(newPos.getY() - oldPos.getY(), 2));
-//        return distance > castRay(posLeft, degrees) || distance > castRay(posRight, degrees);
+    public boolean checkForCollision(Coords position) {
+                    
         for (Edges edge : environment) {
-//            D=r^2*[(b_1 -a_1)^2+(b_2 - a_2)^2]-[a_1*(b_2 -a_2) -a_2*(b_1 -a_1)]^2
-            double D = Math.pow(l / 2, 2) * (Math.pow(edge.getTo().getX() - edge.getFrom().getX(), 2) + Math.pow(edge.getTo().getY() - edge.getFrom().getY(), 2)) - Math.pow(edge.getFrom().getX() * (edge.getTo().getY() - edge.getFrom().getY()) - edge.getFrom().getY() * (edge.getTo().getX() - edge.getFrom().getX()), 2);
-            if (D >= 0)
+                        
+            // get edge equation
+            double m;
+            double c = 0;
+            if (edge.getTo().getX() == edge.getFrom().getX()) { //vertical edge
+                m = Integer.MAX_VALUE;
+            } else if (edge.getTo().getY() == edge.getFrom().getY()) { //horizontal edge
+                m = 0;
+                c = edge.getFrom().getY();
+            } else { // diagonal edge
+                m = (edge.getTo().getY() - edge.getFrom().getY()) / (edge.getTo().getX() - edge.getFrom().getX());
+                c = edge.getFrom().getY() - edge.getFrom().getX() * m;
+            }
+            
+            // get robot equation
+            double r = (double)(l)/2.0;
+            double p = position.getX();
+            double q = position.getY();
+            
+            // calculate delta - calculating b^2-4*a*c
+            double delta;
+            if (m == Integer.MAX_VALUE) { // special delta for vertical line
+                delta = Math.pow(-2*q,2) - 4 * (Math.pow(q,2)-Math.pow(r,2)+Math.pow(edge.getTo().getX()-p,2));			
+            } else { // regular case
+                delta = Math.pow(2*(m*c-m*q-p),2) - 4 * (Math.pow(m,2)+1) * (Math.pow(q,2)-Math.pow(r,2)+Math.pow(p,2)-2*c*q+Math.pow(c,2));			
+            }
+            
+            // line is tangent to circle or intersecting with 2 distinct points
+            if (delta >= 0) {
                 return true;
+            }
         }
+        
+        // no intersection
         return false;
     }
 
