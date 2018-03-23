@@ -53,10 +53,6 @@ public class Maze {
 //        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //left line
     }
 
-    public static Set<Coords> getBeacons() {
-        return beacons;
-    }
-
     /**
      * check for collisions between the robot and obstacles (walls)
      * @param position new position of the robot
@@ -282,7 +278,7 @@ public class Maze {
      * @return set of coordinates of the beacons in range and sight of the robot
      *
      */
-    public Set<Coords> intersectionPointOfBeacons(Coords RobotPos) {
+    public Set<Coords> beaconsInRange (Coords RobotPos) {
 
         // calculate first the number of beacons in range
         Set<Coords> beaconsInRange = new HashSet<>();
@@ -303,61 +299,6 @@ public class Maze {
         }
 
         return beaconsInRange;
-//        //need at least 2 beacons to calculate position of robot
-//        if (numberOfBeaconsInRange > 1) {
-//            double x1 = beaconsInRange[0].getX();
-//            double x2 = beaconsInRange[1].getX();
-//            double y1 = beaconsInRange[0].getY();
-//            double y2 = beaconsInRange[1].getY();
-//            // double r1 = Math.sqrt(Math.pow(beaconsInRange[0].getX()-robotsCurrentPosition.getX(),2) + Math.pow(beaconsInRange[0].getY() - robotsCurrentPosition.getY(), 2));
-//            // double r2 = Math.sqrt(Math.pow(beaconsInRange[1].getX()-robotsCurrentPosition.getX(),2) + Math.pow(beaconsInRange[1].getY() - robotsCurrentPosition.getY(), 2));
-//            double r1 = Math.sqrt(Math.pow(beaconsInRange[0].getX()-RobotPos.getX(),2) + Math.pow(beaconsInRange[0].getY() - RobotPos.getY(), 2));
-//            double r2 = Math.sqrt(Math.pow(beaconsInRange[1].getX()-RobotPos.getX(),2) + Math.pow(beaconsInRange[1].getY() - RobotPos.getY(), 2));
-//            //if at least 3 beacons in range (easier to calculate exact position)
-//            if(numberOfBeaconsInRange >= 3) {
-//                double x3 = beaconsInRange[2].getX();
-//                double y3 = beaconsInRange[2].getY();
-//                double r3 = Math.sqrt(Math.pow(beaconsInRange[2].getX()-RobotPos.getX(),2) + Math.pow(beaconsInRange[2].getY() - RobotPos.getY(), 2));
-//                // double r3 = Math.sqrt(Math.pow(beaconsInRange[2].getX()-robotsCurrentPosition.getX(),2) + Math.pow(beaconsInRange[2].getY() - robotsCurrentPosition.getY(), 2));
-//
-//                double x = ((y2 - y3) * ((Math.pow(y2, 2) - Math.pow(y1, 2)) + (Math.pow(x2, 2) - Math.pow(x1, 2)) + (Math.pow(r1, 2) - Math.pow(r2, 2))) - (y1 - y2) * ((Math.pow(y3, 2) - Math.pow(y2, 2)) + (Math.pow(x3, 2) - Math.pow(x2, 2)) + (Math.pow(r2, 2) - Math.pow(r3, 2)))) / (2 * ((x1 - x2) * (y2 - y3) - (x2 - x3) * (y1 - y2)));
-//                double y = ((x2 - x3) * ((Math.pow(x2, 2) - Math.pow(x1, 2)) + (Math.pow(y2, 2) - Math.pow(y1, 2)) + (Math.pow(r1, 2) - Math.pow(r2, 2))) - (x1 - x2) * ((Math.pow(x3, 2) - Math.pow(x2, 2)) + (Math.pow(y3, 2) - Math.pow(y2, 2)) + (Math.pow(r2, 2) - Math.pow(r3, 2)))) / (2 * ((y1 - y2) * (x2 - x3) - (y2 - y3) * (x1 - x2)));
-//                return new Coords(x, y);
-//            } else {
-//                //if there are at most 2 beacons (trickier to calculate position because robot could be in 2 different locations)
-//                double distanceBetweenBeacons = Math.sqrt(Math.pow(beaconsInRange[0].getX() - beaconsInRange[1].getX(), 2) + Math.pow(beaconsInRange[0].getY() - beaconsInRange[1].getY(), 2));
-//                //in case distance is bigger than the 2 radius of the circles
-//                //or one circle is inside another one
-//                //or one circle lays on top of another with the same radius
-//                if (distanceBetweenBeacons > (r1 + r2) || distanceBetweenBeacons < Math.abs(r1 - r2) || (distanceBetweenBeacons == 0 && r1 == r2))
-//                    return null;
-//                else {
-//                    double a = (Math.pow(r1, 2) - Math.pow(r2, 2) + Math.pow(distanceBetweenBeacons, 2)) / (2 * distanceBetweenBeacons);
-//                    double h = Math.sqrt(Math.pow(r1, 2) - Math.pow(a, 2));
-//                    double tmpX = x1 + a * Math.abs(x2 - x1) / distanceBetweenBeacons;
-//                    double tmpY = y1 + a * Math.abs(y2 - y1) / distanceBetweenBeacons;
-//                    double x, y;
-//                    //if the x coordinates of the robot are bigger than the x of the center line of the 2 circles intersecting
-//                    // if (robotsCurrentPosition.getX() > tmpX) {
-//                    if (RobotPos.getX() > tmpX) {
-//                        x = tmpX + h * Math.abs(y2 - y1) / distanceBetweenBeacons;
-//                    } else {
-//                        x = tmpX - h * Math.abs(y2 - y1) / distanceBetweenBeacons;
-//                    }
-//
-//                    //if the y coordinates of the robot are bigger than the y of the center line of the 2 circles intersecting
-//                    // if (robotsCurrentPosition.getY() > tmpY) {
-//                    if (RobotPos.getY() > tmpY) {
-//                        y = tmpY + h * Math.abs(x2 - x1) / distanceBetweenBeacons;
-//                    } else {
-//                        y = tmpY - h * Math.abs(x2 - x1) / distanceBetweenBeacons;
-//                    }
-//                    return new Coords(x, y);
-//                }
-//            }
-//        }else {
-//            return null;
-//        }
     }
 
     /**
@@ -422,5 +363,11 @@ public class Maze {
      */
     public Coords getRobotsCurrentPosition() {
         return robotsCurrentPosition;
+    }
+
+
+
+    public static Set<Coords> getBeacons() {
+        return beacons;
     }
 }
