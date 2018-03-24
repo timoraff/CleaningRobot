@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.Set;
-import javax.security.auth.login.*;
 import java.awt.Polygon;
 
 /**
@@ -146,7 +144,7 @@ class Visualizer extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		for (Coords beacon : maze.beaconsInRange(new Coords(0,4))) {
+		for (Coords beacon : robot.beaconsInRange()) {
 			int finalX = (int) (BORDER + (beacon.getX() - beaconRange) * SCALE);
 			int finalY = (int) (BORDER + (beacon.getY() - beaconRange) * SCALE);
 			int finalWidth = (int) (beaconRange*2 * SCALE);

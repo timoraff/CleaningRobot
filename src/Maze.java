@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,7 +8,7 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private static Set<Coords> beacons;
-    private double l = 0;
+    private double l;
     private double minY, maxY;
     private double minX, maxX;
     private Coords robotsCurrentPosition;
@@ -48,12 +47,12 @@ public class Maze {
         beacons.add(new Coords(maxX - (maxX / 5), minY + (maxY / 5)));
         beacons.add(new Coords(minX + (maxX / 5), maxY - (maxY / 2)));
         beacons.add(new Coords(maxX / 2, maxY / 2));
-        beacons.add(new Coords(maxX / 2 + 4, maxY / 2 + 4));
+        beacons.add(new Coords(maxX / 2 + 4, maxY / 2 + 2));
 
         // obstacle
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), minY + (maxY / 5)))); //bottom line
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 2)))); //right line
-        environment.add(new Edges(new Coords(maxX / 2, maxY / 2), new Coords(maxX / 2 + 4, maxY / 2 + 4))); //top line
+        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), minY + (maxY / 5))));
+        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 2))));
+        environment.add(new Edges(new Coords(maxX / 2, maxY / 2), new Coords(maxX / 2 + 4, maxY / 2 + 2))); //top line
 //        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //left line
     }
 
@@ -303,14 +302,6 @@ public class Maze {
         }
 
         return beaconsInRange;
-    }
-
-    /**
-     * set the distance between the 2 wheels of the robot
-     * @param l distance
-     */
-    public void setLength(int l) {
-        this.l = l;
     }
 
     /**
