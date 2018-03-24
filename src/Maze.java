@@ -112,7 +112,20 @@ public class Maze {
             
             // line is tangent to circle or intersecting with 2 distinct points
             if (delta >= 0) {
-                return true;
+                
+                double edgeMinX = Math.min(edge.getFrom().getX(), edge.getTo().getX());
+                double edgeMaxX = Math.max(edge.getFrom().getX(), edge.getTo().getX());
+                double edgeMinY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                double edgeMaxY = Math.max(edge.getFrom().getY(), edge.getTo().getY());
+                
+                double robotMinX = position.getX()-l/2.0;
+                double robotMaxX = position.getX()+l/2.0;
+                double robotMinY = position.getY()-l/2.0;
+                double robotMaxY = position.getY()+l/2.0;
+                
+                if (!(robotMaxX < edgeMinX||robotMinX > edgeMaxX||robotMaxY < edgeMinY||robotMinY > edgeMaxY)) {
+                    return true;
+                }
             }
         }
         
