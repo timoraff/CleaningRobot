@@ -223,7 +223,7 @@ class Visualizer extends JPanel {
 		// draw everything
 		drawEnvironment(g);
 		drawBeacons(g);
-		//drawCovered(g);
+		drawCovered(g);
 		drawRobot(g);
 	}
 
@@ -231,6 +231,9 @@ class Visualizer extends JPanel {
 	public void update() {
 		currentRoboCoords = robot.getCurrentPosition();
 		covered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
+		if (covered.size() > 500) {
+			covered.remove(0);
+		}
 		repaint();
 	}
 }
