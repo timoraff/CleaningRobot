@@ -37,23 +37,41 @@ public class Maze {
         environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY))); //right line
         environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY))); //left line
 
+        // obstacle
+        environment.add(new Edges(new Coords(10, 8), new Coords(30, 8)));
+        environment.add(new Edges(new Coords(10, 8), new Coords(10, 11)));
+        environment.add(new Edges(new Coords(30, 8), new Coords(30, 11)));
+
+        environment.add(new Edges(new Coords(10, 22), new Coords(30, 22)));
+        environment.add(new Edges(new Coords(10, 22), new Coords(10, 19)));
+        environment.add(new Edges(new Coords(30, 22), new Coords(30, 19)));
+
+//        environment.add(new Edges(new Coords(maxX - (maxX / 5), maxY - (maxY / 5)), new Coords(maxX - (maxX / 5), maxY - (maxY / 3))));
+
+
         //beacons for the walls
         beacons.add(new Coords(minX, minY));
-        beacons.add(new Coords(maxX, minY));
+        beacons.add(new Coords(minX, maxY / 3));
+        beacons.add(new Coords(minX, 2 * maxY / 3));
         beacons.add(new Coords(minX, maxY));
+        beacons.add(new Coords(maxX, minY));
+        beacons.add(new Coords(maxX / 3, minY));
+        beacons.add(new Coords(2 * maxX / 3, minY));
         beacons.add(new Coords(maxX, maxY));
+        beacons.add(new Coords(maxX, maxY / 3));
+        beacons.add(new Coords(maxX, 2 * maxY / 3));
+        beacons.add(new Coords(maxX / 3, maxY));
+        beacons.add(new Coords(2 * maxX / 3, maxY));
 
-        beacons.add(new Coords(minX + (maxX / 5), minY + (maxY / 5)));
-        beacons.add(new Coords(maxX - (maxX / 5), minY + (maxY / 5)));
-        beacons.add(new Coords(minX + (maxX / 5), maxY - (maxY / 2)));
-        beacons.add(new Coords(maxX / 2, maxY / 2));
-        beacons.add(new Coords(maxX / 2 + 4, maxY / 2 + 2));
+        beacons.add(new Coords(10, 8));
+        beacons.add(new Coords(20, 8));
+        beacons.add(new Coords(30, 8));
 
-        // obstacle
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), minY + (maxY / 5))));
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 2))));
-        environment.add(new Edges(new Coords(maxX / 2, maxY / 2), new Coords(maxX / 2 + 4, maxY / 2 + 2))); //top line
-//        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //left line
+        beacons.add(new Coords(10, 22));
+        beacons.add(new Coords(20, 22));
+        beacons.add(new Coords(30, 22));
+
+
     }
 
     /**
@@ -80,7 +98,7 @@ public class Maze {
             }
             
             // get robot equation
-            double r = (double)(l)/2.0;
+            double r = l/2.0 + 0.0 ;
             double p = position.getX();
             double q = position.getY();
             

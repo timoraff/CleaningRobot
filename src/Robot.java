@@ -68,14 +68,22 @@ public class Robot {
             newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
             newtheta = Math.toDegrees(theta + w * deltat) % 360;
         }
-
+		double oldPosX = currentPosition.getX();
+		double oldPosY = currentPosition.getY();
+		double oldPosAngle = currentPosition.getAngle();
         currentPosition.setX(newx);
         currentPosition.setY(newy);
         currentPosition.setAngle(newtheta);
 
         boolean colision = maze.checkForCollision(currentPosition);
         if (colision) {
-            currentPosition.setAngle((currentPosition.getAngle() + Math.random() * 180) % 360);
+//        	if (vR == vL) {
+				currentPosition.setX(oldPosX);
+				currentPosition.setY(oldPosY);
+				// just move backwards;
+//			}
+			double newAngle = (oldPosAngle + Math.random() * 360) % 360;
+            currentPosition.setAngle(newAngle);
         }
 		//update belief.
 		//not sure what exactly the action is
