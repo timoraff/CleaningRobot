@@ -319,19 +319,36 @@ public class Maze {
         for(Coords beacon : beacons){
             double d = Math.sqrt(Math.pow(beacon.getX()-robotPos.getX(),2) + Math.pow(beacon.getY() - robotPos.getY(), 2));
             if(d <= rangeOfBeacons) {
-                double angle = Math.toDegrees(Math.atan2(beacon.getY() - robotPos.getY(), beacon.getX() - robotPos.getX()));
-                if (angle < 0) {
-                    angle = (-angle) % 360;
+                double angle;
+//                if (robotPos.getX()-beacon.getX() == 0) {
+//                    angle = 90;
+//                } else {
+//                    angle = Math.toDegrees(Math.atan((robotPos.getY()-beacon.getY())/(robotPos.getX()-beacon.getX())));
+//                }
+                
+                if (robotPos.getX()-beacon.getX() == 0) {
+                    angle = 90;
                 } else {
-                    angle = angle % 360;
+                    angle = Math.toDegrees(Math.atan((robotPos.getY()-beacon.getY())/(robotPos.getX()-beacon.getX())));
                 }
-                if(castRay(robotPos, angle) >= d) {
+                if (robotPos.getX() > beacon.getX() && robotPos.getY() <= beacon.getY()) {
+                    angle += 180;
+                } else if (robotPos.getX() >= beacon.getX() && robotPos.getY() > beacon.getY()) {
+                    angle += 180;
+                } else if (robotPos.getX() < beacon.getX() && robotPos.getY() > beacon.getY()) {
+                    angle += 360;
+                }
+                d = d - (d % 0.0001);
+                double rayDistance = castRay(robotPos, angle);
+                rayDistance = rayDistance - (rayDistance % 0.0001);
+
+                if(rayDistance >= d) {
                     //add the beacons to the list
                     beaconsInRange.add(beacon);
                 }
             }
         }
-
+        System.out.println();
         return beaconsInRange;
     }
 

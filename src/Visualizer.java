@@ -102,8 +102,8 @@ class Visualizer extends JPanel {
 		if (oldRoboCoords != null) {
 			// moving direction is obtained by comparing old and current coordinates
 			double degrees = getDegrees(oldRoboCoords, currentRoboCoords);
-			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0)*Math.cos(Math.toRadians(degrees)));
-			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0)*Math.sin(Math.toRadians(degrees)));
+			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0-(l/8.0)*SCALE)*Math.cos(Math.toRadians(degrees)));
+			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0-(l/8.0)*SCALE)*Math.sin(Math.toRadians(degrees)));
 			g2.setColor(Color.WHITE);
 			int size = (int)(l/4.0 * SCALE);
 			g2.fillOval((int)(x-size/2.0), (int)(y-size/2.0), size, size);
