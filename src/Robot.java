@@ -1,10 +1,7 @@
-<<<<<<< HEAD
-import java.util.Arrays;
+
+import java.util.Set;
 import org.ejml.simple.SimpleMatrix;
 
-=======
-import java.util.Set;
->>>>>>> ee7ec62f1b5140f89efa7b7b004009cf45f78eab
 
 /**
  * 
