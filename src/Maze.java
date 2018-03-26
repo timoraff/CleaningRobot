@@ -313,8 +313,8 @@ public class Maze {
      * @return ArrayList of coordinates of the beacons in range and sight of the robot
      *
      */
-    public ArrayList<Coords> beaconsInRange (Coords robotPos) {
-
+    public ArrayList<Coords> beaconsInRange () {
+        Coords robotPos = robotsCurrentPosition;
         // calculate first the number of beacons in range
         ArrayList<Coords> beaconsInRange = new ArrayList<>();
         for(Coords beacon : beacons){
