@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,7 +8,7 @@ import java.util.Set;
 public class Maze {
     private static Set<Edges> environment;
     private static Set<Coords> beacons;
-    private double l = 0;
+    private double l;
     private double minY, maxY;
     private double minX, maxX;
     private Coords robotsCurrentPosition;
@@ -38,23 +37,41 @@ public class Maze {
         environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY))); //right line
         environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY))); //left line
 
+        // obstacle
+        environment.add(new Edges(new Coords(10, 8), new Coords(30, 8)));
+        environment.add(new Edges(new Coords(10, 8), new Coords(10, 11)));
+        environment.add(new Edges(new Coords(30, 8), new Coords(30, 11)));
+
+        environment.add(new Edges(new Coords(10, 22), new Coords(30, 22)));
+        environment.add(new Edges(new Coords(10, 22), new Coords(10, 19)));
+        environment.add(new Edges(new Coords(30, 22), new Coords(30, 19)));
+
+//        environment.add(new Edges(new Coords(maxX - (maxX / 5), maxY - (maxY / 5)), new Coords(maxX - (maxX / 5), maxY - (maxY / 3))));
+
+
         //beacons for the walls
         beacons.add(new Coords(minX, minY));
-        beacons.add(new Coords(maxX, minY));
+        beacons.add(new Coords(minX, maxY / 3));
+        beacons.add(new Coords(minX, 2 * maxY / 3));
         beacons.add(new Coords(minX, maxY));
+        beacons.add(new Coords(maxX, minY));
+        beacons.add(new Coords(maxX / 3, minY));
+        beacons.add(new Coords(2 * maxX / 3, minY));
         beacons.add(new Coords(maxX, maxY));
+        beacons.add(new Coords(maxX, maxY / 3));
+        beacons.add(new Coords(maxX, 2 * maxY / 3));
+        beacons.add(new Coords(maxX / 3, maxY));
+        beacons.add(new Coords(2 * maxX / 3, maxY));
 
-        beacons.add(new Coords(minX + (maxX / 5), minY + (maxY / 5)));
-        beacons.add(new Coords(maxX - (maxX / 5), minY + (maxY / 5)));
-        beacons.add(new Coords(minX + (maxX / 5), maxY - (maxY / 2)));
-        beacons.add(new Coords(maxX / 2, maxY / 2));
-        beacons.add(new Coords(maxX / 2 + 4, maxY / 2 + 4));
+        beacons.add(new Coords(10, 8));
+        beacons.add(new Coords(20, 8));
+        beacons.add(new Coords(30, 8));
 
-        // obstacle
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(maxX - (maxX / 5), minY + (maxY / 5)))); //bottom line
-        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 2)))); //right line
-        environment.add(new Edges(new Coords(maxX / 2, maxY / 2), new Coords(maxX / 2 + 4, maxY / 2 + 4))); //top line
-//        environment.add(new Edges(new Coords(minX + (maxX / 5), minY + (maxY / 5)), new Coords(minX + (maxX / 5), maxY - (maxY / 5)))); //left line
+        beacons.add(new Coords(10, 22));
+        beacons.add(new Coords(20, 22));
+        beacons.add(new Coords(30, 22));
+
+
     }
 
     /**
@@ -81,7 +98,7 @@ public class Maze {
             }
             
             // get robot equation
-            double r = (double)(l)/2.0;
+            double r = l/2.0 + 0.0 ;
             double p = position.getX();
             double q = position.getY();
             
@@ -95,7 +112,20 @@ public class Maze {
             
             // line is tangent to circle or intersecting with 2 distinct points
             if (delta >= 0) {
-                return true;
+                
+                double edgeMinX = Math.min(edge.getFrom().getX(), edge.getTo().getX());
+                double edgeMaxX = Math.max(edge.getFrom().getX(), edge.getTo().getX());
+                double edgeMinY = Math.min(edge.getFrom().getY(), edge.getTo().getY());
+                double edgeMaxY = Math.max(edge.getFrom().getY(), edge.getTo().getY());
+                
+                double robotMinX = position.getX()-l/2.0;
+                double robotMaxX = position.getX()+l/2.0;
+                double robotMinY = position.getY()-l/2.0;
+                double robotMaxY = position.getY()+l/2.0;
+                
+                if (!(robotMaxX < edgeMinX||robotMinX > edgeMaxX||robotMaxY < edgeMinY||robotMinY > edgeMaxY)) {
+                    return true;
+                }
             }
         }
         
@@ -289,28 +319,37 @@ public class Maze {
         for(Coords beacon : beacons){
             double d = Math.sqrt(Math.pow(beacon.getX()-robotPos.getX(),2) + Math.pow(beacon.getY() - robotPos.getY(), 2));
             if(d <= rangeOfBeacons) {
-                double angle = Math.toDegrees(Math.atan2(beacon.getY() - robotPos.getY(), beacon.getX() - robotPos.getX()));
-                if (angle < 0) {
-                    angle = (-angle) % 360;
+                double angle;
+//                if (robotPos.getX()-beacon.getX() == 0) {
+//                    angle = 90;
+//                } else {
+//                    angle = Math.toDegrees(Math.atan((robotPos.getY()-beacon.getY())/(robotPos.getX()-beacon.getX())));
+//                }
+                
+                if (robotPos.getX()-beacon.getX() == 0) {
+                    angle = 90;
                 } else {
-                    angle = angle % 360;
+                    angle = Math.toDegrees(Math.atan((robotPos.getY()-beacon.getY())/(robotPos.getX()-beacon.getX())));
                 }
-                if(castRay(robotPos, angle) >= d) {
+                if (robotPos.getX() > beacon.getX() && robotPos.getY() <= beacon.getY()) {
+                    angle += 180;
+                } else if (robotPos.getX() >= beacon.getX() && robotPos.getY() > beacon.getY()) {
+                    angle += 180;
+                } else if (robotPos.getX() < beacon.getX() && robotPos.getY() > beacon.getY()) {
+                    angle += 360;
+                }
+                d = d - (d % 0.0001);
+                double rayDistance = castRay(robotPos, angle);
+                rayDistance = rayDistance - (rayDistance % 0.0001);
+
+                if(rayDistance >= d) {
                     //add the beacons to the list
                     beaconsInRange.add(beacon);
                 }
             }
         }
-
+        System.out.println();
         return beaconsInRange;
-    }
-
-    /**
-     * set the distance between the 2 wheels of the robot
-     * @param l distance
-     */
-    public void setLength(int l) {
-        this.l = l;
     }
 
     /**

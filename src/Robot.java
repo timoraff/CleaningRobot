@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 import java.util.Arrays;
 import org.ejml.simple.SimpleMatrix;
 
+=======
+import java.util.Set;
+>>>>>>> ee7ec62f1b5140f89efa7b7b004009cf45f78eab
 
 /**
  * 
@@ -16,9 +20,10 @@ public class Robot {
 	private Maze maze;
 	
 	//for the 2nd assignement
-	Coords expectation;
-	Coords variance;
+    private Coords expectation;
+	private Coords variance;
 	
+
 	// 3x3 Matrixes
 	private SimpleMatrix A, B, C, R, K, Q;
 	
@@ -26,7 +31,8 @@ public class Robot {
 	private SimpleMatrix mu, sigma, tempmu, tempsigma, act, meas;
 			
 	
-	Visualizer visulizer;
+	private Visualizer visulizer;
+
 
 	Robot(double x, double y, Maze maze, double l) {
 		this.l = l;
@@ -56,40 +62,49 @@ public class Robot {
 		double newy = 0;
 		double newtheta = 0;
 		// for using cos and sin we need Radians
-		boolean colision = true;
-		while (colision) {
-			
-			double deltat = 0.3;
-			double w;
-			double r;
-			double iccX;
-			double iccY;
-			// calculating new position (newx and newy) using the formulas discussed in
-			// class
-			if (vR == vL) {
-				newx = x + Math.cos(theta) * vR * deltat;
-				newy = y + Math.sin(theta) * vR * deltat;
-				// just move forward;
-			} else {
-				r = (l / 2.) * ((vL + vR) / (vR - vL));
-				w = (vR - vL) / l;
-				iccX = x - r * Math.sin(theta);
-				iccY = y + r * Math.cos(theta);
-				newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
-				newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
-				newtheta = Math.toDegrees(theta + w * deltat) % 360;
-			}
-			colision = maze.checkForCollision(currentPosition)|| newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||newy > maze.getMaxY();
-			if (colision)
-				currentPosition.setAngle(Math.random() * 360);
-		}
-		//update belief. 
+        double deltat = 0.3;
+        double w;
+        double r;
+        double iccX;
+        double iccY;
+
+        // calculating new position (newx and newy) using the formulas discussed in
+        // class
+        if (vR == vL) {
+            newx = x + Math.cos(theta) * vR * deltat;
+            newy = y + Math.sin(theta) * vR * deltat;
+            // just move forward;
+        } else {
+            r = (l / 2.) * ((vL + vR) / (vR - vL));
+            w = (vR - vL) / l;
+            iccX = x - r * Math.sin(theta);
+            iccY = y + r * Math.cos(theta);
+            newx = Math.cos(w * deltat) * (x - iccX) - (Math.sin(w * deltat) * (y - iccY)) + iccX;
+            newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
+            newtheta = Math.toDegrees(theta + w * deltat) % 360;
+        }
+		double oldPosX = currentPosition.getX();
+		double oldPosY = currentPosition.getY();
+		double oldPosAngle = currentPosition.getAngle();
+        currentPosition.setX(newx);
+        currentPosition.setY(newy);
+        currentPosition.setAngle(newtheta);
+
+        boolean colision = maze.checkForCollision(currentPosition);
+        if (colision) {
+//        	if (vR == vL) {
+				currentPosition.setX(oldPosX);
+				currentPosition.setY(oldPosY);
+				// just move backwards;
+//			}
+			double newAngle = (oldPosAngle + Math.random() * 360) % 360;
+            currentPosition.setAngle(newAngle);
+        }
+		//update belief.
 		//not sure what exactly the action is
 		//TODO inset method for triangulation here.
 		kalman_filter(new Coords(0, 0, 0), new Coords(newx-x, newy-y, newtheta-theta));
-		currentPosition.setX(newx);
-		currentPosition.setY(newy);
-		currentPosition.setAngle(newtheta);
+
 		return;/*
 						 * || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||
 						 * newy > maze.getMaxY()*/
@@ -102,8 +117,8 @@ public class Robot {
 		//measurements = z
 		//position = u
 		/*
-		 * berechnung nach folien ausführen
-		 * einfach die lokelen objekte (expectation und variance) überschreiben		 *  
+		 * berechnung nach folien ausfhren
+		 * einfach die lokelen objekte (expectation und variance) berschreiben		 *  
 		 */
 		A = SimpleMatrix.identity(3);
 		B = SimpleMatrix.identity(3);
@@ -172,4 +187,11 @@ public class Robot {
 		return currentPosition;
 	}
 
+    /**
+     * check for beacons in range
+     * @return set of beacons in range of robot
+     */
+    public Set<Coords> beaconsInRange() {
+        return maze.beaconsInRange(currentPosition);
+    }
 }

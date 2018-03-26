@@ -1,8 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
-import java.util.Set;
-import javax.security.auth.login.*;
 import java.awt.Polygon;
 
 /**
@@ -104,8 +102,8 @@ class Visualizer extends JPanel {
 		if (oldRoboCoords != null) {
 			// moving direction is obtained by comparing old and current coordinates
 			double degrees = getDegrees(oldRoboCoords, currentRoboCoords);
-			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0)*Math.cos(Math.toRadians(degrees)));
-			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0)*Math.sin(Math.toRadians(degrees)));
+			int x = (int)(finalX+finalWidth/2.0 + (finalWidth/2.0-(l/8.0)*SCALE)*Math.cos(Math.toRadians(degrees)));
+			int y = (int)(finalY+finalWidth/2.0 + (finalWidth/2.0-(l/8.0)*SCALE)*Math.sin(Math.toRadians(degrees)));
 			g2.setColor(Color.WHITE);
 			int size = (int)(l/4.0 * SCALE);
 			g2.fillOval((int)(x-size/2.0), (int)(y-size/2.0), size, size);
@@ -146,7 +144,7 @@ class Visualizer extends JPanel {
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
-		for (Coords beacon : maze.beaconsInRange(new Coords(0,4))) {
+		for (Coords beacon : robot.beaconsInRange()) {
 			int finalX = (int) (BORDER + (beacon.getX() - beaconRange) * SCALE);
 			int finalY = (int) (BORDER + (beacon.getY() - beaconRange) * SCALE);
 			int finalWidth = (int) (beaconRange*2 * SCALE);
@@ -225,7 +223,7 @@ class Visualizer extends JPanel {
 		// draw everything
 		drawEnvironment(g);
 		drawBeacons(g);
-		//drawCovered(g);
+		drawCovered(g);
 		drawRobot(g);
 	}
 
@@ -233,6 +231,9 @@ class Visualizer extends JPanel {
 	public void update() {
 		currentRoboCoords = robot.getCurrentPosition();
 		covered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
+		if (covered.size() > 500) {
+			covered.remove(0);
+		}
 		repaint();
 	}
 }

@@ -1,44 +1,25 @@
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.Arrays;
 
 public class Main {
-	// number of evolutino steps
-	final static int ITERATIONS = 100;
-	// size of the starting population
-	final static int STARTINGPOP = 100;
 	// starting position for the robot
-	final static double STARTINGX = 2;
-	final static double STARTINGY = 2;
+	private final static double STARTINGX = 25;
+	private final static double STARTINGY = 25;
 	// diamter of the robot
-	final static double ROBOTDIAMETER = 2;
+	private final static double ROBOTDIAMETER = 2;
 	// beacon range
-	final static double BEACONRANGE = 10;
-	/**
-	 * set to true if you just want to run the agent with a recently created NN
-	 */
-	static boolean JUSTLOAD = false;
-	/**
-	 * set to true if you want to continue on the recently saved dataset
-	 */
-	static boolean CONTINUETRAINING = false;
-
+	private final static double BEACONRANGE = 10;
 	// just a main to execute the programm
 	public static void main(String[] args) {
-		Maze maze = new Maze(0, 0, 40, 20, ROBOTDIAMETER, BEACONRANGE);
+		Maze maze = new Maze(0, 0, 40, 30, ROBOTDIAMETER, BEACONRANGE);
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze, ROBOTDIAMETER);
 		Visualizer visualizer = new Visualizer(maze, robo, ROBOTDIAMETER, BEACONRANGE);
 		robo.setVisualizer(visualizer);
 
 		// let the fittest model play for some time --> for seeing a result..
-		for (int i = 0; i < 200000; i++) {
-			//double []tmp= new double[] {1,2,3};
+		while(true) {
+			// double []tmp= new double[] {1,2,3};
 			robo.move();
 			try {
-				Thread.sleep(5);
+				Thread.sleep(20);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();
