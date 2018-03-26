@@ -12,6 +12,7 @@ public class Main {
 		Maze maze = new Maze(0, 0, 40, 30, ROBOTDIAMETER, BEACONRANGE);
 		Robot robo = new Robot(STARTINGX, STARTINGY, maze, ROBOTDIAMETER);
 		Visualizer visualizer = new Visualizer(maze, robo, ROBOTDIAMETER, BEACONRANGE);
+		maze.setRobotsCurrentPosition(new Coords(STARTINGX, STARTINGY));
 		robo.setVisualizer(visualizer);
 
 		// let the fittest model play for some time --> for seeing a result..
