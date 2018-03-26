@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import org.ejml.simple.SimpleMatrix;
+
 
 /**
  * 
@@ -16,6 +18,13 @@ public class Robot {
 	//for the 2nd assignement
 	Coords expectation;
 	Coords variance;
+	
+	// 3x3 Matrixes
+	private SimpleMatrix A, B, C, R, K, Q;
+	
+	// system state estimate
+	private SimpleMatrix mu, sigma, tempmu, tempsigma, act, meas;
+			
 	
 	Visualizer visulizer;
 
@@ -86,7 +95,9 @@ public class Robot {
 						 * newy > maze.getMaxY()*/
 	
 	}
+	
 
+	
 	public void kalman_filter(Coords measurements, Coords action) {
 		//measurements = z
 		//position = u
@@ -94,6 +105,51 @@ public class Robot {
 		 * berechnung nach folien ausführen
 		 * einfach die lokelen objekte (expectation und variance) überschreiben		 *  
 		 */
+		A = SimpleMatrix.identity(3);
+		B = SimpleMatrix.identity(3);
+		C = SimpleMatrix.identity(3);
+		R = SimpleMatrix.identity(3); //TODO What is R
+		Q = SimpleMatrix.identity(3); //TODO What is Q
+		
+		mu.set(0,0, expectation.getX());
+		mu.set(0,1, expectation.getY());
+		mu.set(0,2, expectation.getAngle());
+		
+		sigma.set(0,0, variance.getX());
+		sigma.set(0,1, variance.getY());
+		sigma.set(0,2, variance.getAngle());
+		
+		act.set(0,0, action.getX());
+		act.set(0,1, action.getY());
+		act.set(0,2, action.getAngle());
+		
+		meas.set(0,0, measurements.getX());
+		meas.set(0,1, measurements.getY());
+		meas.set(0,2, measurements.getAngle());
+		
+		tempmu = A.mult(mu).plus(B.mult(act));
+		tempsigma = A.mult(sigma).mult(A.transpose()).plus(R);
+		K = tempsigma.mult(C.transpose()).mult(C.mult(tempsigma).mult(C.transpose()).plus(Q)).invert();
+		mu = tempmu.plus(K.mult(meas.minus(C.mult(tempmu))));
+		sigma = SimpleMatrix.identity(3).minus(K.mult(C)).mult(tempsigma);
+		
+		expectation.setX(mu.get(0,0));
+		expectation.setY(mu.get(0,1));
+		expectation.setAngle(mu.get(0,2));
+		
+		variance.setX(sigma.get(0,0));
+		variance.setY(sigma.get(0,1));
+		variance.setAngle(sigma.get(0,3));
+		
+		/*
+		newavexpectation.setX(expectation.getX() + action.getX());
+		newavexpectation.setY(expectation.getY()+ action.getY());
+		newavexpectation.setAngle(expectation.getAngle()+ action.getAngle());
+		
+		newavvariance.setX(variance.getX() +0); //+R +0 ist nur ein Platzhalter
+		
+		*/
+		System.out.println(A);
 	}
 
 	public double[] getSensorValues() {
