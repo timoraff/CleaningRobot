@@ -229,7 +229,7 @@ class Visualizer extends JPanel {
 
 	// robot has a new position
 	public void update() {
-		currentRoboCoords = robot.getCurrentPosition();
+		currentRoboCoords = maze.getRobotsCurrentPosition();
 		covered.add(new Coords(robot.getBelief().getX(), robot.getBelief().getY()));
 		if (covered.size() > 80) {
 			covered.remove(0);

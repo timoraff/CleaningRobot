@@ -1,6 +1,5 @@
 
 import java.util.ArrayList;
-import java.util.Set;
 import org.ejml.simple.SimpleMatrix;
 
 import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
@@ -14,9 +13,10 @@ import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
 public class Robot {
 	// contains movement methods for the Robot and i think the position ?
 
-	private double l = 2; // distance between the 2 wheels
+	private double l; // distance between the 2 wheels
 	private Coords currentPosition;
 	private Maze maze;
+	private int speedInc;
 
 	// for the 2nd assignement
 	private Coords expectation;
@@ -25,10 +25,9 @@ public class Robot {
 	// 3x3 Matrixes
 	private SimpleMatrix A, B, C, R, K, Q;
 
-	private Visualizer visulizer;
-
-	Robot(double x, double y, Maze maze, double l) {
+	Robot(double x, double y, Maze maze, double l, int speedInc) {
 		this.l = l;
+		this.speedInc = speedInc;
 		currentPosition = new Coords(x, y);
 		currentPosition.setAngle(1);
 		// init with known position. current position is not needed anymore ? maze
@@ -57,13 +56,13 @@ public class Robot {
 	public void move() {
 		// gets information from the NN Vr and Vl
 		// change vL and vR to values from -1to 1
-		double vL = Math.random();
-		double vR = Math.random();
-		double x = currentPosition.getX();
-		double y = currentPosition.getY();
-		double theta = Math.toRadians(currentPosition.getAngle());
-		double newx = 0;
-		double newy = 0;
+		double vL = Math.random() * speedInc;
+		double vR = Math.random() * speedInc;
+		double x = maze.getRobotsCurrentPosition().getX();
+		double y = maze.getRobotsCurrentPosition().getY();
+		double theta = Math.toRadians(maze.getRobotsCurrentPosition().getAngle());
+		double newx;
+		double newy;
 		double newtheta = 0;
 		// for using cos and sin we need Radians
 		double deltat = 0.3;
@@ -87,35 +86,38 @@ public class Robot {
 			newy = Math.sin(w * deltat) * (x - iccX) + (Math.cos(w * deltat) * (y - iccY)) + iccY;
 			newtheta = Math.toDegrees(theta + w * deltat) % 360;
 		}
-		double oldPosX = currentPosition.getX();
-		double oldPosY = currentPosition.getY();
-		double oldPosAngle = currentPosition.getAngle();
-		currentPosition.setX(newx);
-		currentPosition.setY(newy);
-		currentPosition.setAngle(newtheta);
 
-		boolean colision = maze.checkForCollision(currentPosition);
+		double oldPosX = maze.getRobotsCurrentPosition().getX();
+		double oldPosY = maze.getRobotsCurrentPosition().getY();
+		double oldPosAngle = maze.getRobotsCurrentPosition().getAngle();
+
+		maze.getRobotsCurrentPosition().setX(newx);
+        maze.getRobotsCurrentPosition().setY(newy);
+        maze.getRobotsCurrentPosition().setAngle(newtheta);
+
+		boolean colision = maze.checkForCollision();
 		if (colision) {
-			// if (vR == vL) {
-			currentPosition.setX(oldPosX);
-			currentPosition.setY(oldPosY);
-			// just move backwards;
-			// }
 			double newAngle = (oldPosAngle + Math.random() * 360) % 360;
-			currentPosition.setAngle(newAngle);
+            maze.getRobotsCurrentPosition().setX(oldPosX);
+            maze.getRobotsCurrentPosition().setY(oldPosY);
+            maze.getRobotsCurrentPosition().setAngle(newAngle);
 		}
 		// update belief.
 		// not sure what exactly the action is
 		// TODO inset method for triangulation here.
-		//kalman_filter(calculatePosition(), new Coords(newx - x, newy - y, newtheta - theta));
+//		kalman_filter(calculatePosition(), new Coords(newx - x, newy - y, newtheta - theta));
 		expectation=calculatePosition();
 		//System.out.println(expectation+" - "+ currentPosition);
+        double angle = Math.atan2(expectation.getY() - currentPosition.getY(), expectation.getX() - currentPosition.getX());
+        double degrees = Math.toDegrees(angle);
+        if (degrees < 0)
+            degrees += 360;
+        else if (degrees > 360)
+            degrees -= 360;
 
-		return;/*
-				 * || newx < maze.getMinX() || newx > maze.getMaxX() || newy < maze.getMinY() ||
-				 * newy > maze.getMaxY()
-				 */
-
+        currentPosition.setX(expectation.getX());
+        currentPosition.setY(expectation.getY());
+        currentPosition.setAngle(degrees);
 	}
 
 	/*
@@ -125,8 +127,8 @@ public class Robot {
 		// measurements = z
 		// position = u
 		/*
-		 * berechnung nach folien ausfhren einfach die lokelen objekte (expectation und
-		 * variance) berschreiben *
+		 * berechnung nach folien ausfhren einfach die lokalen objekte (expectation und
+		 * variance) beschreiben *
 		 */
 
 		SimpleMatrix mu = new SimpleMatrix(3, 1);
@@ -187,10 +189,6 @@ public class Robot {
 		return sensors;
 	}
 
-	public void setVisualizer(Visualizer visulizer) {
-		this.visulizer = visulizer;
-	}
-
 	public Coords getCurrentPosition() {
 		return currentPosition;
 	}
@@ -212,10 +210,6 @@ public class Robot {
 		//TODO Maze knows the exact position of robot Robot himself not.
 		ArrayList<Coords> beacons = maze.beaconsInRange();
 
-		//use exact position for measurement 
-		// robot position:
-		double posX = currentPosition.getX();
-		double posY = currentPosition.getY();
 		double angleOfView = currentPosition.getAngle();
 
 		if (beacons.size() > 1) {
@@ -271,9 +265,9 @@ public class Robot {
 					Q1y += y * ((x2 - x1) / distanceBetweenBeacons);
 
 					if(angleOfView > 0 && angleOfView <= 90) {
-                        return new Coords(Q2x, Q1y);
+                        return new Coords(Q1x, Q1y);
 					} else if(angleOfView > 90 && angleOfView <= 180) {
-						return new Coords(Q1x, Q1y);
+						return new Coords(Q2x, Q1y);
 					} else if(angleOfView > 180 && angleOfView <= 270) {
 						return new Coords(Q1x, Q2y);
 					} else {

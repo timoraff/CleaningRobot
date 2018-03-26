@@ -1,19 +1,18 @@
 
 public class Main {
 	// starting position for the robot
-	private final static double STARTINGX = 25;
-	private final static double STARTINGY = 25;
+	private final static double STARTINGX = 15;
+	private final static double STARTINGY = 15;
 	// diamter of the robot
 	private final static double ROBOTDIAMETER = 2;
 	// beacon range
-	private final static double BEACONRANGE = 10;
+	private final static double BEACONRANGE = 14;
 	// just a main to execute the programm
 	public static void main(String[] args) {
 		Maze maze = new Maze(0, 0, 40, 30, ROBOTDIAMETER, BEACONRANGE);
-		Robot robo = new Robot(STARTINGX, STARTINGY, maze, ROBOTDIAMETER);
+		Robot robo = new Robot(STARTINGX, STARTINGY, maze, ROBOTDIAMETER, 1);
 		Visualizer visualizer = new Visualizer(maze, robo, ROBOTDIAMETER, BEACONRANGE);
 		maze.setRobotsCurrentPosition(new Coords(STARTINGX, STARTINGY));
-		robo.setVisualizer(visualizer);
 
 		// let the fittest model play for some time --> for seeing a result..
 		while(true) {

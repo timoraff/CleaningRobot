@@ -77,12 +77,12 @@ public class Maze {
 
     /**
      * check for collisions between the robot and obstacles (walls)
-     * @param position new position of the robot
      * @return  true if collision is detected,
      *          false if no collision is detected
      */
-    public boolean checkForCollision(Coords position) {
-                    
+    public boolean checkForCollision() {
+        Coords position = robotsCurrentPosition;
+
         for (Edges edge : environment) {
                         
             // get edge equation
