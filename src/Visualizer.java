@@ -177,7 +177,7 @@ class Visualizer extends JPanel {
 			int finalWidth = (int) (l * SCALE);
 			
 			// draw area covered by robot on position
-			g2.fillOval(finalX, finalY, finalWidth, finalWidth);
+			g2.drawOval(finalX, finalY, finalWidth, finalWidth);
 			
 			if(oldCoords.getX()!=Integer.MIN_VALUE) {
 				
@@ -230,8 +230,8 @@ class Visualizer extends JPanel {
 	// robot has a new position
 	public void update() {
 		currentRoboCoords = robot.getCurrentPosition();
-		covered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
-		if (covered.size() > 500) {
+		covered.add(new Coords(robot.getBelief().getX(), robot.getBelief().getY()));
+		if (covered.size() > 80) {
 			covered.remove(0);
 		}
 		repaint();

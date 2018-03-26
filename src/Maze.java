@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -309,13 +310,13 @@ public class Maze {
 
     /**
      * this method calculates the distances of the robots position to the beacons in sight and range of the robot and returns a list of beacon coordinates
-     * @return set of coordinates of the beacons in range and sight of the robot
+     * @return ArrayList of coordinates of the beacons in range and sight of the robot
      *
      */
-    public Set<Coords> beaconsInRange (Coords robotPos) {
+    public ArrayList<Coords> beaconsInRange (Coords robotPos) {
 
         // calculate first the number of beacons in range
-        Set<Coords> beaconsInRange = new HashSet<>();
+        ArrayList<Coords> beaconsInRange = new ArrayList<>();
         for(Coords beacon : beacons){
             double d = Math.sqrt(Math.pow(beacon.getX()-robotPos.getX(),2) + Math.pow(beacon.getY() - robotPos.getY(), 2));
             if(d <= rangeOfBeacons) {
@@ -348,7 +349,6 @@ public class Maze {
                 }
             }
         }
-        System.out.println();
         return beaconsInRange;
     }
 
