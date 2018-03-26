@@ -321,11 +321,6 @@ public class Maze {
             double d = Math.sqrt(Math.pow(beacon.getX()-robotPos.getX(),2) + Math.pow(beacon.getY() - robotPos.getY(), 2));
             if(d <= rangeOfBeacons) {
                 double angle;
-//                if (robotPos.getX()-beacon.getX() == 0) {
-//                    angle = 90;
-//                } else {
-//                    angle = Math.toDegrees(Math.atan((robotPos.getY()-beacon.getY())/(robotPos.getX()-beacon.getX())));
-//                }
                 
                 if (robotPos.getX()-beacon.getX() == 0) {
                     angle = 90;
@@ -344,6 +339,7 @@ public class Maze {
                 rayDistance = rayDistance - (rayDistance % 0.0001);
 
                 if(rayDistance >= d) {
+                    beacon.setAngle(d);
                     //add the beacons to the list
                     beaconsInRange.add(beacon);
                 }

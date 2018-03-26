@@ -205,12 +205,12 @@ public class Robot {
 	 * @return set of beacons in range of robot
 	 */
 	public ArrayList<Coords> beaconsInRange() {
-		return maze.beaconsInRange(currentPosition);
+		return maze.beaconsInRange();
 	}
 
 	public Coords calculatePosition() {
 		//TODO Maze knows the exact position of robot Robot himself not.
-		ArrayList<Coords> beacons = maze.beaconsInRange(currentPosition);
+		ArrayList<Coords> beacons = maze.beaconsInRange();
 
 		//use exact position for measurement 
 		// robot position:
@@ -222,22 +222,13 @@ public class Robot {
 			double x2 = beacons.get(1).getX();
 			double y1 = beacons.get(0).getY();
 			double y2 = beacons.get(1).getY();
-			// double r1 =
-			// Math.sqrt(Math.pow(beaconsInRange[0].getX()-robotsCurrentPosition.getX(),2) +
-			// Math.pow(beaconsInRange[0].getY() - robotsCurrentPosition.getY(), 2));
-			// double r2 =
-			// Math.sqrt(Math.pow(beaconsInRange[1].getX()-robotsCurrentPosition.getX(),2) +
-			// Math.pow(beaconsInRange[1].getY() - robotsCurrentPosition.getY(), 2));
-			double r1 = Math.sqrt(Math.pow(beacons.get(0).getX() - posX, 2) + Math.pow(beacons.get(0).getY() - posY, 2));
-			double r2 = Math.sqrt(Math.pow(beacons.get(1).getX() - posX, 2) + Math.pow(beacons.get(1).getY() - posY, 2));
+			double r1 = beacons.get(0).getAngle();
+			double r2 = beacons.get(1).getAngle();
 			// if at least 3 beacons in range (easier to calculate exact position)
 			if (beacons.size() >= 3) {
 				double x3 = beacons.get(2).getX();
 				double y3 = beacons.get(2).getY();
-				double r3 = Math.sqrt(Math.pow(beacons.get(2).getX() - posX, 2) + Math.pow(beacons.get(2).getY() - posY, 2));
-				// double r3 =
-				// Math.sqrt(Math.pow(beaconsInRange[2].getX()-robotsCurrentPosition.getX(),2) +
-				// Math.pow(beaconsInRange[2].getY() - robotsCurrentPosition.getY(), 2));
+				double r3 = beacons.get(2).getAngle();
 
 				double x = ((y2 - y3)
 						* ((Math.pow(y2, 2) - Math.pow(y1, 2)) + (Math.pow(x2, 2) - Math.pow(x1, 2))
