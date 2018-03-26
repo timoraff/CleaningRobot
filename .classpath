@@ -3,6 +3,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/RepastSimphony-2.5/eclipse/plugins/repast.simphony.gis_2.5.0/lib/ejml-core-0.26.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Timo Raff/Downloads/ejml-v0.33-libs/ejml-v0.33-libs/ejml-simple-0.33.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/ejml-v0.33-libs/ejml-simple-0.33.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
