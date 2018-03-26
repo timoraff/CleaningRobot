@@ -23,9 +23,6 @@ public class Robot {
 
 	// 3x3 Matrixes
 	private SimpleMatrix A, B, C, R, K, Q;
-	
-	// system state estimate
-	private SimpleMatrix mu, sigma, tempmu, tempsigma, act, meas;
 			
 	
 	private Visualizer visulizer;
@@ -38,7 +35,17 @@ public class Robot {
 		//init with known position. current position is not needed anymore ? maze should know the exact position of the robot;
 		expectation= new Coords(x, y);
 		expectation.setAngle(1);
+		
+		variance = new Coords(0, 0,0);
 		this.maze = maze;
+		
+		//init simple 3x3 matrices 
+		//edit to add noise!?
+		A = SimpleMatrix.identity(3);
+		B = SimpleMatrix.identity(3);
+		C = SimpleMatrix.identity(3);
+		R = SimpleMatrix.identity(3); //TODO What is R
+		Q = SimpleMatrix.identity(3); //TODO What is Q
 
 	}
 
@@ -117,41 +124,45 @@ public class Robot {
 		 * berechnung nach folien ausfhren
 		 * einfach die lokelen objekte (expectation und variance) berschreiben		 *  
 		 */
-		A = SimpleMatrix.identity(3);
-		B = SimpleMatrix.identity(3);
-		C = SimpleMatrix.identity(3);
-		R = SimpleMatrix.identity(3); //TODO What is R
-		Q = SimpleMatrix.identity(3); //TODO What is Q
+
+		SimpleMatrix mu = new  SimpleMatrix(3,1);
+		SimpleMatrix sigma = new SimpleMatrix(3,3);
+		SimpleMatrix act = new SimpleMatrix(3,1);
+		SimpleMatrix meas= new SimpleMatrix(3,1);
 		
 		mu.set(0,0, expectation.getX());
-		mu.set(0,1, expectation.getY());
-		mu.set(0,2, expectation.getAngle());
+		mu.set(1,0, expectation.getY());
+		mu.set(2,0, expectation.getAngle());
 		
 		sigma.set(0,0, variance.getX());
-		sigma.set(0,1, variance.getY());
-		sigma.set(0,2, variance.getAngle());
+		sigma.set(1,1, variance.getY());
+		sigma.set(2,2, variance.getAngle());
 		
 		act.set(0,0, action.getX());
-		act.set(0,1, action.getY());
-		act.set(0,2, action.getAngle());
+		act.set(1,0, action.getY());
+		act.set(2,0, action.getAngle());
 		
 		meas.set(0,0, measurements.getX());
-		meas.set(0,1, measurements.getY());
-		meas.set(0,2, measurements.getAngle());
+		meas.set(1,0, measurements.getY());
+		meas.set(2,0, measurements.getAngle());
+		System.out.println(A);
+		System.out.println(sigma);
+		System.out.println(A.transpose());
+		System.out.println(A.mult(sigma).mult(A.transpose()));
 		
-		tempmu = A.mult(mu).plus(B.mult(act));
-		tempsigma = A.mult(sigma).mult(A.transpose()).plus(R);
+		SimpleMatrix tempmu = A.mult(mu).plus(B.mult(act));
+		SimpleMatrix tempsigma = A.mult(sigma).mult(A.transpose()).plus(R);
 		K = tempsigma.mult(C.transpose()).mult(C.mult(tempsigma).mult(C.transpose()).plus(Q)).invert();
 		mu = tempmu.plus(K.mult(meas.minus(C.mult(tempmu))));
 		sigma = SimpleMatrix.identity(3).minus(K.mult(C)).mult(tempsigma);
 		
 		expectation.setX(mu.get(0,0));
-		expectation.setY(mu.get(0,1));
-		expectation.setAngle(mu.get(0,2));
+		expectation.setY(mu.get(1,0));
+		expectation.setAngle(mu.get(2,0));
 		
 		variance.setX(sigma.get(0,0));
-		variance.setY(sigma.get(0,1));
-		variance.setAngle(sigma.get(0,3));
+		variance.setY(sigma.get(1,1));
+		variance.setAngle(sigma.get(2,2));
 		
 		/*
 		newavexpectation.setX(expectation.getX() + action.getX());
