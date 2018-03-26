@@ -260,18 +260,30 @@ public class Robot {
 					double x = (Math.pow(r1, 2) + Math.pow(distanceBetweenBeacons, 2) - Math.pow(r2, 2)) / (2 * distanceBetweenBeacons);
 					double y = Math.sqrt(Math.pow(r1, 2) - Math.pow(x, 2));
 
-					if(angleOfView >= 0 && angleOfView <= 180) {
-                        System.out.println(currentPosition.getX()+" - "+currentPosition.getY()+ " <> "+x+" - "+y);
-                        return new Coords(x, y);
-                    } else {
-                        System.out.println(currentPosition.getX()+" - "+currentPosition.getY()+ " <> "+x+" - "+y);
-                        return new Coords(x, -y);
-                    }
+					double Q1x = x1 + x * ((x2 - x1) / distanceBetweenBeacons);
+					double Q1y = y1 + x * ((y2 - y1) / distanceBetweenBeacons);
+
+					if(y == 0)
+						return new Coords(Q1x, Q1y);
+					double Q2x = Q1x + y * ((y2 - y1) / distanceBetweenBeacons);
+					double Q2y = Q1y - y * ((x2 - x1) / distanceBetweenBeacons);
+					Q1x -= y * ((y2 - y1) / distanceBetweenBeacons);
+					Q1y += y * ((x2 - x1) / distanceBetweenBeacons);
+
+					if(angleOfView > 0 && angleOfView <= 90) {
+                        return new Coords(Q2x, Q1y);
+					} else if(angleOfView > 90 && angleOfView <= 180) {
+						return new Coords(Q1x, Q1y);
+					} else if(angleOfView > 180 && angleOfView <= 270) {
+						return new Coords(Q1x, Q2y);
+					} else {
+						return new Coords(Q2x, Q2y);
+					}
 				}
 			}
 		} else {
-			// What to do if not enought beacons in range?
-			System.out.println("not enought beacons!!!!!!");
+			// What to do if not enough beacons in range?
+			System.out.println("not enough beacons!!!!!!");
 			return null;
 		}
 	}
