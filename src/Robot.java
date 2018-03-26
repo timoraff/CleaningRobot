@@ -216,6 +216,7 @@ public class Robot {
 		// robot position:
 		double posX = currentPosition.getX();
 		double posY = currentPosition.getY();
+		double angleOfView = currentPosition.getAngle();
 
 		if (beacons.size() > 1) {
 			double x1 = beacons.get(0).getX();
@@ -256,31 +257,16 @@ public class Robot {
 					System.out.println("fehler");
 					return null;
 				}else {
-					double a = (Math.pow(r1, 2) - Math.pow(r2, 2) + Math.pow(distanceBetweenBeacons, 2))
-							/ (2 * distanceBetweenBeacons);
-					double h = Math.sqrt(Math.pow(r1, 2) - Math.pow(a, 2));
-					double tmpX = x1 + a * Math.abs(x2 - x1) / distanceBetweenBeacons;
-					double tmpY = y1 + a * Math.abs(y2 - y1) / distanceBetweenBeacons;
-					double x, y;
-					// if the x coordinates of the robot are bigger than the x of the center line of
-					// the 2 circles intersecting
-					// if (robotsCurrentPosition.getX() > tmpX) {
-					if (posX > tmpX) {
-						x = tmpX + h * Math.abs(y2 - y1) / distanceBetweenBeacons;
-					} else {
-						x = tmpX - h * Math.abs(y2 - y1) / distanceBetweenBeacons;
-					}
+					double x = (Math.pow(r1, 2) + Math.pow(distanceBetweenBeacons, 2) - Math.pow(r2, 2)) / (2 * distanceBetweenBeacons);
+					double y = Math.sqrt(Math.pow(r1, 2) - Math.pow(x, 2));
 
-					// if the y coordinates of the robot are bigger than the y of the center line of
-					// the 2 circles intersecting
-					// if (robotsCurrentPosition.getY() > tmpY) {
-					if (posY > tmpY) {
-						y = tmpY + h * Math.abs(x2 - x1) / distanceBetweenBeacons;
-					} else {
-						y = tmpY - h * Math.abs(x2 - x1) / distanceBetweenBeacons;
-					}
-					System.out.println(currentPosition.getX()+" - "+currentPosition.getY()+ " <> "+x+" - "+y);
-					return new Coords(x, y);
+					if(angleOfView >= 0 && angleOfView <= 180) {
+                        System.out.println(currentPosition.getX()+" - "+currentPosition.getY()+ " <> "+x+" - "+y);
+                        return new Coords(x, y);
+                    } else {
+                        System.out.println(currentPosition.getX()+" - "+currentPosition.getY()+ " <> "+x+" - "+y);
+                        return new Coords(x, -y);
+                    }
 				}
 			}
 		} else {
