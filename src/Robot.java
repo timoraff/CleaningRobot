@@ -8,16 +8,14 @@ import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
  * 
  * @author Rouven Bonke, Timo Raff
  *
- *         class for calculating position updates and the fitness functino
+ *         class for calculating the belief position of the robot
  */
 public class Robot {
 
 	private double l; // distance between the 2 wheels
-	private Coords currentPosition;
 	private Maze maze;
 	private int speedInc;
 
-	// for the 2nd assignement
 	private Coords expectation;
 	private Coords variance;
 
@@ -27,7 +25,6 @@ public class Robot {
 	Robot(double x, double y, Maze maze, double l, int speedInc) {
 		this.l = l;
 		this.speedInc = speedInc;
-		currentPosition = new Coords(x, y, 1);
 		expectation = new Coords(x, y, 1);
 
 		variance = new Coords(0, 0, 0);
@@ -97,27 +94,13 @@ public class Robot {
 			expectation.setAngle(newAngle);
 			return;
 		}
-		// update belief.
-		// not sure what exactly the action is
-		// TODO inset method for triangulation here.
-		double deltameas = (Math.random()-0.5)*3;
+		//error in measurement is somewhere between +3 and -3
+		double deltameas = (Math.random()-0.5)*3; 
+		//error in movement is a relative error of max 10%
 		double deltamove = (Math.random()-0.5)*2/10;
 		kalman_filter(new Coords (calculatePosition().getX()+deltameas, calculatePosition().getY()+deltameas, calculatePosition().getAngle()), new Coords((newx - x)*(1+deltamove), (newy - y)*(1+deltamove), newtheta - theta));
-		//expectation=calculatePosition();
-		//System.out.println(expectation+" - "+ currentPosition);
-        double angle = Math.atan2(expectation.getY() - currentPosition.getY(), expectation.getX() - currentPosition.getX());
-        double degrees = Math.toDegrees(angle);
-        if (degrees < 0)
-            degrees += 360;
-        else if (degrees > 360)
-            degrees -= 360;
         }
-        /*
-        currentPosition.setX(expectation.getX());
-        currentPosition.setY(expectation.getY());
-        currentPosition.setAngle(degrees);
-		*/
-
+     
 	
 
 	/*
@@ -161,14 +144,7 @@ public class Robot {
 		variance.setY(sigma.get(1, 1));
 		variance.setAngle(sigma.get(2, 2));
 
-		/*
-		 * newavexpectation.setX(expectation.getX() + action.getX());
-		 * newavexpectation.setY(expectation.getY()+ action.getY());
-		 * newavexpectation.setAngle(expectation.getAngle()+ action.getAngle());
-		 * 
-		 * newavvariance.setX(variance.getX() +0); //+R +0 ist nur ein Platzhalter
-		 * 
-		 */
+		
 	}
 
 	/**
@@ -198,7 +174,7 @@ public class Robot {
 		// list of beacons in range of the robots current position (correct position)
 		ArrayList<Coords> beacons = maze.beaconsInRange();
 
-		double angleOfView = currentPosition.getAngle();
+		double angleOfView = maze.getRobotsCurrentPosition().getAngle();
 
 		if (beacons.size() > 1) {
 			// for correct location we need at least 2 beacons
@@ -247,7 +223,7 @@ public class Robot {
 				// or one circle lays on top of another with the same radius
 				if (distanceBetweenBeacons > (r1 + r2) || distanceBetweenBeacons < Math.abs(r1 - r2)
 						|| (distanceBetweenBeacons == 0 && r1 == r2)) {
-					return currentPosition;
+					return expectation;
 				} else {
 					// if the circles are within each others range and not on top of each other
 					// x => center point of the distance between the 2 circles
@@ -283,7 +259,7 @@ public class Robot {
 				}
 			}
 		} else {
-			return currentPosition;
+			return expectation;
 		}
 	}
 }
