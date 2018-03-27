@@ -45,8 +45,8 @@ public class Robot {
 		C = SimpleMatrix.identity(3);
 		double movesigmax =0.01, movesigmay =0.01, movesigmatheta =0.01;
 		double meassigmax=0.01, meassigmay=0.01, meassigmatheta=0.01 ;
-		R = SimpleMatrix.diag(movesigmax, movesigmay, movesigmatheta); // TODO What is R movement error
-		Q = SimpleMatrix.diag(meassigmax, meassigmay, meassigmatheta); // TODO What is Q measurement error
+		R = SimpleMatrix.diag(movesigmax, movesigmay, movesigmatheta); // R movement variance
+		Q = SimpleMatrix.diag(meassigmax, meassigmay, meassigmatheta); // Q measurement variance
 
 	}
 
@@ -109,9 +109,9 @@ public class Robot {
 		// update belief.
 		// not sure what exactly the action is
 		// TODO inset method for triangulation here.
-		double deltameas = (Math.random()-1)*2/10;
-		double deltamove = (Math.random()-1)*2/10;
-		kalman_filter(new Coords (calculatePosition().getX()*(1+deltameas), calculatePosition().getY()*(1+deltameas), calculatePosition().getAngle()), new Coords((newx - x)*(1+deltamove), (newy - y)*(1+deltamove), newtheta - theta));
+		double deltameas = (Math.random()-0.5)*3;
+		double deltamove = (Math.random()-0.5)*2/10;
+		kalman_filter(new Coords (calculatePosition().getX()+deltameas, calculatePosition().getY()+deltameas, calculatePosition().getAngle()), new Coords((newx - x)*(1+deltamove), (newy - y)*(1+deltamove), newtheta - theta));
 		//expectation=calculatePosition();
 		//System.out.println(expectation+" - "+ currentPosition);
         double angle = Math.atan2(expectation.getY() - currentPosition.getY(), expectation.getX() - currentPosition.getX());
@@ -134,12 +134,6 @@ public class Robot {
 	 * position (triangulation vbia beacons)
 	 */
 	public void kalman_filter(Coords measurements, Coords action) {
-		// measurements = z
-		// position = u
-		/*
-		 * berechnung nach folien ausfhren einfach die lokalen objekte (expectation und
-		 * variance) beschreiben *
-		 */
 
 		SimpleMatrix mu = new SimpleMatrix(3, 1);
 		SimpleMatrix sigma = new SimpleMatrix(3, 3);
