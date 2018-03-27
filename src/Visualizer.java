@@ -141,6 +141,7 @@ class Visualizer extends JPanel {
 		}
 	}
 	
+        // beacons are drawn as blue dots and a translucent circle for the range
 	public void drawBeacons(Graphics g) {
 		
 		Graphics2D g2 = (Graphics2D) g;
@@ -170,17 +171,17 @@ class Visualizer extends JPanel {
                 covered.add(realCovered);
                 covered.add(beliefCovered);
                 int i=0;
-                
             
+                // draws both lists: past real positions of robot and past belief positions of robot
                 for (ArrayList<Coords> trace : covered) {
 
                         i++;
                         Graphics2D g2 = (Graphics2D) g;
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         if (i == 1) {
-                            g2.setColor(Color.RED);
+                            g2.setColor(Color.RED); // real robot position are drawn in red
                         } else {
-                            g2.setColor(Color.YELLOW);
+                            g2.setColor(Color.YELLOW); // belief positions are drawn in yellow
                         }
                         Coords oldCoords = new Coords(Integer.MIN_VALUE, Integer.MIN_VALUE);
 
@@ -245,15 +246,14 @@ class Visualizer extends JPanel {
 
 	// robot has a new position
 	public void update() {
+            
 		currentRoboCoords = maze.getRobotsCurrentPosition();
 		realCovered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
                 beliefCovered.add(new Coords(robot.getBelief().getX(), robot.getBelief().getY()));
-		if (realCovered.size() > 30) {
-			realCovered.remove(0);
-		}
-                if (beliefCovered.size() > 30) {
-			beliefCovered.remove(0);
-		}
+                
+                // lists of real and belief states have a maximum of 30
+		if (realCovered.size() > 30) { realCovered.remove(0); }
+                if (beliefCovered.size() > 30) { beliefCovered.remove(0); }
 		repaint();
 	}
 }
