@@ -20,7 +20,9 @@ class Visualizer extends JPanel {
 	private JFrame frame;
 	private Coords currentRoboCoords = new Coords(0, 0);
 	private Coords oldRoboCoords = new Coords(0, 0);
-	private ArrayList<Coords> covered = new ArrayList<>(); // saves all visited positions of the robot
+	private ArrayList<Coords> realCovered = new ArrayList<>(); // saves all visited real positions of the robot
+        private ArrayList<Coords> beliefCovered = new ArrayList<>(); // saves all visited belief positions of the robot
+
 
 	public Visualizer(Maze maze, Robot robot, double l, double beaconRange) {
 
@@ -163,48 +165,62 @@ class Visualizer extends JPanel {
 	
 	// trace of robot
 	public void drawCovered(Graphics g) {
-		
-		Graphics2D g2 = (Graphics2D) g;
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(Color.YELLOW);
-		Coords oldCoords = new Coords(Integer.MIN_VALUE, Integer.MIN_VALUE);
-		
-		// for every past robot position
-		for (Coords coords : covered) {
-			
-			int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
-			int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
-			int finalWidth = (int) (l * SCALE);
-			
-			// draw area covered by robot on position
-			g2.drawOval(finalX, finalY, finalWidth, finalWidth);
-			
-			if(oldCoords.getX()!=Integer.MIN_VALUE) {
-				
-				double degrees = getDegrees(oldCoords, coords);
-				double endX1 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+270));
-				double endY1 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+270));
-				
-				double endX2 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
-				double endY2 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
-				
-				double startX1 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
-				double startY1 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
-				
-				double startX2 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees-90));
-				double startY2 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees-90));
-					
-				// rectangle fills area between consecutive robot positions to avoid gaps in the trace	
-				Polygon p = new Polygon();
-				p.addPoint((int)endX1, (int)endY1);
-				p.addPoint((int)endX2, (int)endY2);
-				p.addPoint((int)startX1, (int)startY1);
-				p.addPoint((int)startX2, (int)startY2);
-				g.fillPolygon(p);
-			}
-			oldCoords.setX(coords.getX());
-			oldCoords.setY(coords.getY());
-		}
+            
+                ArrayList<ArrayList<Coords>> covered = new ArrayList<>();
+                covered.add(realCovered);
+                covered.add(beliefCovered);
+                int i=0;
+                
+            
+                for (ArrayList<Coords> trace : covered) {
+
+                        i++;
+                        Graphics2D g2 = (Graphics2D) g;
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        if (i == 1) {
+                            g2.setColor(Color.RED);
+                        } else {
+                            g2.setColor(Color.YELLOW);
+                        }
+                        Coords oldCoords = new Coords(Integer.MIN_VALUE, Integer.MIN_VALUE);
+
+                        // for every past robot position
+                        for (Coords coords : trace) {
+
+                                int finalX = (int) (BORDER + (coords.getX() - l/2.0) * SCALE);
+                                int finalY = (int) (BORDER + (coords.getY() - l/2.0) * SCALE);
+                                int finalWidth = (int) (l * SCALE);
+
+                                // draw area covered by robot on real position
+                                g2.drawOval(finalX, finalY, finalWidth, finalWidth);
+
+                                if(oldCoords.getX()!=Integer.MIN_VALUE) {
+
+                                        double degrees = getDegrees(oldCoords, coords);
+                                        double endX1 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+270));
+                                        double endY1 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+270));
+
+                                        double endX2 = coords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
+                                        double endY2 = coords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
+
+                                        double startX1 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees+90));
+                                        double startY1 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees+90));
+
+                                        double startX2 = oldCoords.getX() + (l/2.0)*Math.cos(Math.toRadians(degrees-90));
+                                        double startY2 = oldCoords.getY() + (l/2.0)*Math.sin(Math.toRadians(degrees-90));
+
+                                        // rectangle fills area between consecutive robot positions to avoid gaps in the trace	
+                                        Polygon p = new Polygon();
+                                        p.addPoint((int)endX1, (int)endY1);
+                                        p.addPoint((int)endX2, (int)endY2);
+                                        p.addPoint((int)startX1, (int)startY1);
+                                        p.addPoint((int)startX2, (int)startY2);
+                                        g.fillPolygon(p);
+                                }
+                                oldCoords.setX(coords.getX());
+                                oldCoords.setY(coords.getY());
+                        }
+                }
 	}
 
 	@Override
@@ -230,9 +246,13 @@ class Visualizer extends JPanel {
 	// robot has a new position
 	public void update() {
 		currentRoboCoords = maze.getRobotsCurrentPosition();
-		covered.add(new Coords(robot.getBelief().getX(), robot.getBelief().getY()));
-		if (covered.size() > 80) {
-			covered.remove(0);
+		realCovered.add(new Coords(currentRoboCoords.getX(), currentRoboCoords.getY()));
+                beliefCovered.add(new Coords(robot.getBelief().getX(), robot.getBelief().getY()));
+		if (realCovered.size() > 30) {
+			realCovered.remove(0);
+		}
+                if (beliefCovered.size() > 30) {
+			beliefCovered.remove(0);
 		}
 		repaint();
 	}
