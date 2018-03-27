@@ -43,8 +43,8 @@ public class Robot {
 		A = SimpleMatrix.identity(3);
 		B = SimpleMatrix.identity(3);
 		C = SimpleMatrix.identity(3);
-		double movesigmax =1, movesigmay =1, movesigmatheta =1;
-		double meassigmax=1, meassigmay=1, meassigmatheta=1;
+		double movesigmax =0.01, movesigmay =0.01, movesigmatheta =0.01;
+		double meassigmax=0.01, meassigmay=0.01, meassigmatheta=0.01 ;
 		R = SimpleMatrix.diag(movesigmax, movesigmay, movesigmatheta); // TODO What is R movement error
 		Q = SimpleMatrix.diag(meassigmax, meassigmay, meassigmatheta); // TODO What is Q measurement error
 
@@ -164,7 +164,7 @@ public class Robot {
 
 		SimpleMatrix tempmu = A.mult(mu).plus(B.mult(act));
 		SimpleMatrix tempsigma = A.mult(sigma).mult(A.transpose()).plus(R);
-		K = tempsigma.mult(C.transpose()).mult(C.mult(tempsigma).mult(C.transpose()).plus(Q)).invert();
+		K = tempsigma.mult(C.transpose()).mult(C.mult(tempsigma).mult(C.transpose()).plus(Q).invert());
 		mu = tempmu.plus(K.mult(meas.minus(C.mult(tempmu))));
 		sigma = SimpleMatrix.identity(3).minus(K.mult(C)).mult(tempsigma);
 
