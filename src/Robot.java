@@ -92,36 +92,38 @@ public class Robot {
 		double oldPosAngle = maze.getRobotsCurrentPosition().getAngle();
 
 		maze.getRobotsCurrentPosition().setX(newx);
-        maze.getRobotsCurrentPosition().setY(newy);
-        maze.getRobotsCurrentPosition().setAngle(newtheta);
+		maze.getRobotsCurrentPosition().setY(newy);
+		maze.getRobotsCurrentPosition().setAngle(newtheta);
 
 		boolean colision = maze.checkForCollision();
 		if (colision) {
 			double newAngle = (oldPosAngle + Math.random() * 360) % 360;
-            maze.getRobotsCurrentPosition().setX(oldPosX);
-            maze.getRobotsCurrentPosition().setY(oldPosY);
-            maze.getRobotsCurrentPosition().setAngle(newAngle);
+			maze.getRobotsCurrentPosition().setX(oldPosX);
+			maze.getRobotsCurrentPosition().setY(oldPosY);
+			maze.getRobotsCurrentPosition().setAngle(newAngle);
+			expectation.setAngle(newAngle);
+			return;
 		}
 		// update belief.
 		// not sure what exactly the action is
 		// TODO inset method for triangulation here.
-//		kalman_filter(calculatePosition(), new Coords(newx - x, newy - y, newtheta - theta));
-		expectation=calculatePosition();
-		//System.out.println(expectation+" - "+ currentPosition);
-        double angle = Math.atan2(expectation.getY() - currentPosition.getY(), expectation.getX() - currentPosition.getX());
-        double degrees = Math.toDegrees(angle);
-        if (degrees < 0)
-            degrees += 360;
-        else if (degrees > 360)
-            degrees -= 360;
+		Coords tmp = calculatePosition();
+		kalman_filter(tmp, new Coords(newx - x, newy - y, newtheta - theta));
+		// expectation=calculatePosition();
+		// System.out.println(expectation+" - "+ currentPosition);
+		double angle = Math.atan2(expectation.getY() - currentPosition.getY(),
+				expectation.getX() - currentPosition.getX());
+		double degrees = Math.toDegrees(angle);
+		if (degrees < 0)
+			degrees += 360;
+		else if (degrees > 360)
+			degrees -= 360;
 
-        currentPosition.setX(expectation.getX());
-        currentPosition.setY(expectation.getY());
-        currentPosition.setAngle(degrees);
 	}
 
 	/*
-	 * updates the belief of the robot on the base of executed action and measured position (triangulation vbia beacons)
+	 * updates the belief of the robot on the base of executed action and measured
+	 * position (triangulation vbia beacons)
 	 */
 	public void kalman_filter(Coords measurements, Coords action) {
 		// measurements = z
@@ -176,7 +178,7 @@ public class Robot {
 		 */
 	}
 
-	//TODO deleteme
+	// TODO deleteme
 	public double[] getSensorValues() {
 		// length of array is 15 not 12 because last 3 inputs are posX, posY and
 		// direction.
@@ -192,7 +194,7 @@ public class Robot {
 	public Coords getCurrentPosition() {
 		return currentPosition;
 	}
-	
+
 	public Coords getBelief() {
 		return expectation;
 	}
@@ -207,7 +209,7 @@ public class Robot {
 	}
 
 	public Coords calculatePosition() {
-		//TODO Maze knows the exact position of robot Robot himself not.
+		// TODO Maze knows the exact position of robot Robot himself not.
 		ArrayList<Coords> beacons = maze.beaconsInRange();
 
 		double angleOfView = currentPosition.getAngle();
@@ -221,9 +223,16 @@ public class Robot {
 			double r2 = beacons.get(1).getAngle();
 			// if at least 3 beacons in range (easier to calculate exact position)
 			if (beacons.size() >= 3) {
+				int i = 3;
 				double x3 = beacons.get(2).getX();
 				double y3 = beacons.get(2).getY();
 				double r3 = beacons.get(2).getAngle();
+				while (((x3 == x2 && x3 == x1) || (y3 == y2 && y3 == y1)) && beacons.size() >= (i + 1)) {
+					x3 = beacons.get(i).getX();
+					y3 = beacons.get(i).getY();
+					r3 = beacons.get(i).getAngle();
+					i++;
+				}
 
 				double x = ((y2 - y3)
 						* ((Math.pow(y2, 2) - Math.pow(y1, 2)) + (Math.pow(x2, 2) - Math.pow(x1, 2))
@@ -250,25 +259,27 @@ public class Robot {
 						|| (distanceBetweenBeacons == 0 && r1 == r2)) {
 					System.out.println("fehler");
 					return null;
-				}else {
-					double x = (Math.pow(r1, 2) + Math.pow(distanceBetweenBeacons, 2) - Math.pow(r2, 2)) / (2 * distanceBetweenBeacons);
+				} else {
+					double x = (Math.pow(r1, 2) + Math.pow(distanceBetweenBeacons, 2) - Math.pow(r2, 2))
+							/ (2 * distanceBetweenBeacons);
 					double y = Math.sqrt(Math.pow(r1, 2) - Math.pow(x, 2));
 
 					double Q1x = x1 + x * ((x2 - x1) / distanceBetweenBeacons);
 					double Q1y = y1 + x * ((y2 - y1) / distanceBetweenBeacons);
 
-					if(y == 0)
+					if (y == 0)
 						return new Coords(Q1x, Q1y);
 					double Q2x = Q1x + y * ((y2 - y1) / distanceBetweenBeacons);
 					double Q2y = Q1y - y * ((x2 - x1) / distanceBetweenBeacons);
 					Q1x -= y * ((y2 - y1) / distanceBetweenBeacons);
 					Q1y += y * ((x2 - x1) / distanceBetweenBeacons);
+					// System.out.println(" Q1x: "+Q1x+" Q1y "+Q1y+" Q2x "+Q2x+" Q2 "+Q2y);
 
-					if(angleOfView > 0 && angleOfView <= 90) {
-                        return new Coords(Q1x, Q1y);
-					} else if(angleOfView > 90 && angleOfView <= 180) {
+					if (angleOfView > 0 && angleOfView <= 90) {
+						return new Coords(Q1x, Q1y);
+					} else if (angleOfView > 90 && angleOfView <= 180) {
 						return new Coords(Q2x, Q1y);
-					} else if(angleOfView > 180 && angleOfView <= 270) {
+					} else if (angleOfView > 180 && angleOfView <= 270) {
 						return new Coords(Q1x, Q2y);
 					} else {
 						return new Coords(Q2x, Q2y);
