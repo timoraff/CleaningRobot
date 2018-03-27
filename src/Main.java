@@ -1,12 +1,12 @@
 
 public class Main {
 	// starting position for the robot
-	private final static double STARTINGX = 15;
-	private final static double STARTINGY = 15;
-	private final static double ROBOTDIAMETER = 2; 	// diamter of the robot
-	private final static double BEACONRANGE = 14; 	// beacon range
-        private final static double MAZEWIDTH = 40;     // widtth of the maze
-        private final static double MAZEHEIGHT = 30;     // height of the maze
+	private final static double STARTINGX = 2;
+	private final static double STARTINGY = 2;
+	private final static double ROBOTDIAMETER = 2; 	// diameter of the robot
+	private final static double BEACONRANGE = 10; 	// beacon range
+	private final static double MAZEWIDTH = 40;     // width of the maze
+	private final static double MAZEHEIGHT = 30;     // height of the maze
         
 	// just a main to execute the programm
 	public static void main(String[] args) {
@@ -19,7 +19,7 @@ public class Main {
 		while(true) {
 			robo.move();
 			try {
-                                // slow down program a little
+				// slow down program a little
 				Thread.sleep(30);
 				visualizer.update();
 			} catch (Exception e) {

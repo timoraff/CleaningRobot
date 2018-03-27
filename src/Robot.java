@@ -11,7 +11,6 @@ import com.sun.org.apache.xalan.internal.xsltc.dom.ArrayNodeListIterator;
  *         class for calculating position updates and the fitness functino
  */
 public class Robot {
-	// contains movement methods for the Robot and i think the position ?
 
 	private double l; // distance between the 2 wheels
 	private Coords currentPosition;
@@ -28,18 +27,13 @@ public class Robot {
 	Robot(double x, double y, Maze maze, double l, int speedInc) {
 		this.l = l;
 		this.speedInc = speedInc;
-		currentPosition = new Coords(x, y);
-		currentPosition.setAngle(1);
-		// init with known position. current position is not needed anymore ? maze
-		// should know the exact position of the robot;
-		expectation = new Coords(x, y);
-		expectation.setAngle(1);
+		currentPosition = new Coords(x, y, 1);
+		expectation = new Coords(x, y, 1);
 
 		variance = new Coords(0, 0, 0);
 		this.maze = maze;
 
 		// init simple 3x3 matrices
-		// edit to add noise!?
 		A = SimpleMatrix.identity(3);
 		B = SimpleMatrix.identity(3);
 		C = SimpleMatrix.identity(3);
@@ -50,11 +44,9 @@ public class Robot {
 
 	}
 
-	public void setPosition(int x, int y) {
-		currentPosition.setX(x);
-		currentPosition.setY(y);
-	}
-
+	/**
+	 * Move the robot based on random speed of the left and the right wheel
+	 */
 	public void move() {
 		// gets information from the NN Vr and Vl
 		// change vL and vR to values from -1to 1
@@ -66,20 +58,19 @@ public class Robot {
 		double newx;
 		double newy;
 		double newtheta = 0;
-		// for using cos and sin we need Radians
 		double deltat = 0.3;
 		double w;
 		double r;
 		double iccX;
 		double iccY;
 
-		// calculating new position (newx and newy) using the formulas discussed in
-		// class
+		// calculating new position (newx and newy) using the formulas discussed in class
 		if (vR == vL) {
+			// move straight forward
 			newx = x + Math.cos(theta) * vR * deltat;
 			newy = y + Math.sin(theta) * vR * deltat;
-			// just move forward;
 		} else {
+			// move in sort of a circle
 			r = (l / 2.) * ((vL + vR) / (vR - vL));
 			w = (vR - vL) / l;
 			iccX = x - r * Math.sin(theta);
@@ -180,23 +171,11 @@ public class Robot {
 		 */
 	}
 
-	// TODO deleteme
-	public double[] getSensorValues() {
-		// length of array is 15 not 12 because last 3 inputs are posX, posY and
-		// direction.
-		double[] sensors = new double[15];
-		double[] tmp = maze.calculateSensorValues(currentPosition);
-		System.arraycopy(tmp, 0, sensors, 0, tmp.length);
-		sensors[12] = currentPosition.getX();
-		sensors[13] = currentPosition.getY();
-		sensors[14] = currentPosition.getAngle();
-		return sensors;
-	}
-
-	public Coords getCurrentPosition() {
-		return currentPosition;
-	}
-
+	/**
+	 * this method returns the belief positions of the robot
+	 *
+	 * @return expectation positions
+	 */
 	public Coords getBelief() {
 		return expectation;
 	}
@@ -210,22 +189,30 @@ public class Robot {
 		return maze.beaconsInRange();
 	}
 
+	/**
+	 * This method calculates the position of the robot based on the beacons in range of the true position
+	 *
+	 * @return coordinates of the robot
+	 */
 	public Coords calculatePosition() {
-		// TODO Maze knows the exact position of robot Robot himself not.
+		// list of beacons in range of the robots current position (correct position)
 		ArrayList<Coords> beacons = maze.beaconsInRange();
 
 		double angleOfView = currentPosition.getAngle();
 
 		if (beacons.size() > 1) {
+			// for correct location we need at least 2 beacons
 			double x1 = beacons.get(0).getX();
 			double x2 = beacons.get(1).getX();
 			double y1 = beacons.get(0).getY();
 			double y2 = beacons.get(1).getY();
+			// we misused here the angle to save the distance from the robot to the beacons
 			double r1 = beacons.get(0).getAngle();
 			double r2 = beacons.get(1).getAngle();
 			// if at least 3 beacons in range (easier to calculate exact position)
 			if (beacons.size() >= 3) {
 				int i = 3;
+				// add another beacon if there are more than 2
 				double x3 = beacons.get(2).getX();
 				double y3 = beacons.get(2).getY();
 				double r3 = beacons.get(2).getAngle();
@@ -236,6 +223,7 @@ public class Robot {
 					i++;
 				}
 
+				// coordinates of the intersection point of three circles
 				double x = ((y2 - y3)
 						* ((Math.pow(y2, 2) - Math.pow(y1, 2)) + (Math.pow(x2, 2) - Math.pow(x1, 2))
 								+ (Math.pow(r1, 2) - Math.pow(r2, 2)))
@@ -254,29 +242,35 @@ public class Robot {
 				// could be in 2 different locations)
 				double distanceBetweenBeacons = Math.sqrt(Math.pow(beacons.get(0).getX() - beacons.get(1).getX(), 2)
 						+ Math.pow(beacons.get(0).getY() - beacons.get(1).getY(), 2));
-				// in case distance is bigger than the 2 radius of the circles
+				// in case distance is bigger than the 2 radii of the circles
 				// or one circle is inside another one
 				// or one circle lays on top of another with the same radius
 				if (distanceBetweenBeacons > (r1 + r2) || distanceBetweenBeacons < Math.abs(r1 - r2)
 						|| (distanceBetweenBeacons == 0 && r1 == r2)) {
-					System.out.println("fehler");
-					return null;
+					return currentPosition;
 				} else {
+					// if the circles are within each others range and not on top of each other
+					// x => center point of the distance between the 2 circles
 					double x = (Math.pow(r1, 2) + Math.pow(distanceBetweenBeacons, 2) - Math.pow(r2, 2))
 							/ (2 * distanceBetweenBeacons);
+					// y => half of the distance between the both intersection points
 					double y = Math.sqrt(Math.pow(r1, 2) - Math.pow(x, 2));
 
+					// coordinates of the first intersection point
 					double Q1x = x1 + x * ((x2 - x1) / distanceBetweenBeacons);
 					double Q1y = y1 + x * ((y2 - y1) / distanceBetweenBeacons);
 
+					// if the distance between the 2 intersection points is 0 means the circles touch each other in one point
 					if (y == 0)
 						return new Coords(Q1x, Q1y);
+
+					// coordinates of second intersection point
 					double Q2x = Q1x + y * ((y2 - y1) / distanceBetweenBeacons);
 					double Q2y = Q1y - y * ((x2 - x1) / distanceBetweenBeacons);
 					Q1x -= y * ((y2 - y1) / distanceBetweenBeacons);
 					Q1y += y * ((x2 - x1) / distanceBetweenBeacons);
-					// System.out.println(" Q1x: "+Q1x+" Q1y "+Q1y+" Q2x "+Q2x+" Q2 "+Q2y);
 
+					// depending on the angle of view, consider only certain coordinates
 					if (angleOfView > 0 && angleOfView <= 90) {
 						return new Coords(Q1x, Q1y);
 					} else if (angleOfView > 90 && angleOfView <= 180) {
@@ -289,10 +283,7 @@ public class Robot {
 				}
 			}
 		} else {
-			// What to do if not enough beacons in range?
-			System.out.println("not enough beacons!!!!!!");
-			return null;
+			return currentPosition;
 		}
 	}
-
 }
