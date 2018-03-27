@@ -43,8 +43,10 @@ public class Robot {
 		A = SimpleMatrix.identity(3);
 		B = SimpleMatrix.identity(3);
 		C = SimpleMatrix.identity(3);
-		R = SimpleMatrix.identity(3); // TODO What is R
-		Q = SimpleMatrix.identity(3); // TODO What is Q
+		double movesigmax =1, movesigmay =1, movesigmatheta =1;
+		double meassigmax=1, meassigmay=1, meassigmatheta=1;
+		R = SimpleMatrix.diag(movesigmax, movesigmay, movesigmatheta); // TODO What is R movement error
+		Q = SimpleMatrix.diag(meassigmax, meassigmay, meassigmatheta); // TODO What is Q measurement error
 
 	}
 
@@ -105,8 +107,10 @@ public class Robot {
 		// update belief.
 		// not sure what exactly the action is
 		// TODO inset method for triangulation here.
-//		kalman_filter(calculatePosition(), new Coords(newx - x, newy - y, newtheta - theta));
-		expectation=calculatePosition();
+		double deltameas = (Math.random()-1)*2/10;
+		double deltamove = (Math.random()-1)*2/10;
+		kalman_filter(new Coords (calculatePosition().getX()*(1+deltameas), calculatePosition().getY()*(1+deltameas), calculatePosition().getAngle()), new Coords((newx - x)*(1+deltamove), (newy - y)*(1+deltamove), newtheta - theta));
+		//expectation=calculatePosition();
 		//System.out.println(expectation+" - "+ currentPosition);
         double angle = Math.atan2(expectation.getY() - currentPosition.getY(), expectation.getX() - currentPosition.getX());
         double degrees = Math.toDegrees(angle);
@@ -114,11 +118,13 @@ public class Robot {
             degrees += 360;
         else if (degrees > 360)
             degrees -= 360;
-
+        /*
         currentPosition.setX(expectation.getX());
         currentPosition.setY(expectation.getY());
         currentPosition.setAngle(degrees);
+		*/
 	}
+	
 
 	/*
 	 * updates the belief of the robot on the base of executed action and measured position (triangulation vbia beacons)
