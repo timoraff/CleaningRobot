@@ -19,7 +19,7 @@ public class Main {
 			// double []tmp= new double[] {1,2,3};
 			robo.move();
 			try {
-				Thread.sleep(50);
+				Thread.sleep(30);
 				visualizer.update();
 			} catch (Exception e) {
 				e.printStackTrace();
