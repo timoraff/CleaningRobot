@@ -32,23 +32,19 @@ public class Maze {
         environment = new HashSet<>();
         beacons = new HashSet<>();
 
-        // wall
+        // outer walls
         environment.add(new Edges(new Coords(minX, minY), new Coords(maxX, minY))); //bottom line
         environment.add(new Edges(new Coords(maxX, minY), new Coords(maxX, maxY))); //top line
         environment.add(new Edges(new Coords(maxX, maxY), new Coords(minX, maxY))); //right line
         environment.add(new Edges(new Coords(minX, maxY), new Coords(minX, minY))); //left line
 
-        // obstacle
+        // obstacle in the middle of map
         environment.add(new Edges(new Coords(10, 8), new Coords(30, 8)));
         environment.add(new Edges(new Coords(10, 8), new Coords(10, 11)));
         environment.add(new Edges(new Coords(30, 8), new Coords(30, 11)));
-
         environment.add(new Edges(new Coords(10, 22), new Coords(30, 22)));
         environment.add(new Edges(new Coords(10, 22), new Coords(10, 19)));
         environment.add(new Edges(new Coords(30, 22), new Coords(30, 19)));
-
-//        environment.add(new Edges(new Coords(maxX - (maxX / 5), maxY - (maxY / 5)), new Coords(maxX - (maxX / 5), maxY - (maxY / 3))));
-
 
         //beacons for the walls
         beacons.add(new Coords(minX, minY));
@@ -71,8 +67,6 @@ public class Maze {
         beacons.add(new Coords(10, 22));
         beacons.add(new Coords(20, 22));
         beacons.add(new Coords(30, 22));
-
-
     }
 
     /**
@@ -124,6 +118,7 @@ public class Maze {
                 double robotMinY = position.getY()-l/2.0;
                 double robotMaxY = position.getY()+l/2.0;
                 
+                // checking whether collision is with actual edge of map (not infinite line described by equation)
                 if (!(robotMaxX < edgeMinX||robotMinX > edgeMaxX||robotMaxY < edgeMinY||robotMinY > edgeMaxY)) {
                     return true;
                 }
@@ -132,60 +127,6 @@ public class Maze {
         
         // no intersection
         return false;
-    }
-
-    /**
-     * Calculate the distance between the robot and walls in 12 directions depending on the current robots view angle
-     * @param currentPosition pos of the robot
-     * @return array of measurements
-     */
-    public double[] calculateSensorValues(Coords currentPosition) {
-        double sensors[]= new double[12];
-        double[] degrees = {
-                currentPosition.getAngle(),
-                currentPosition.getAngle() + 30,
-                currentPosition.getAngle() + 60,
-                currentPosition.getAngle() + 90,
-                currentPosition.getAngle() + 120,
-                currentPosition.getAngle() + 150,
-                currentPosition.getAngle() + 180,
-                currentPosition.getAngle() + 210,
-                currentPosition.getAngle() + 240,
-                currentPosition.getAngle() + 270,
-                currentPosition.getAngle() + 300,
-                currentPosition.getAngle() + 330
-        };
-
-        // cast a ray in 12 directions and save the distance to the nearest wall
-        for(int i = 0; i < degrees.length; i++) {
-            sensors[i] = castRay(currentPosition, degrees[i]);
-        }
-
-//        //get the maximum distance from the sensors
-//        //used to calcualte the noise afterwards
-//        double maxDistance = 0;
-//        for (double distance : sensors) {
-//            if(distance != Integer.MAX_VALUE)
-//                maxDistance = Math.max(distance, maxDistance);
-//        }
-//
-//        //add noise to the distance sensors
-//        double percent = 10;
-//        for (double distance : sensors) {
-//            //generate random value between 0 and 1
-//            double rand = Math.random();
-//            double noisyDistance;
-//            //if random value is smaller than 0.5 decrease distance else increase
-//            if (rand < 0.5) {
-//                //the current distance gets decreased by 10 percent of the ratio of the distance to the max distance mu;tiplied by the random factor
-//                noisyDistance = distance - distance * (distance/maxDistance) * percent/100 * rand;
-//            } else {
-//                //the current distance gets increased by 10 percent of the ratio of the distance to the max distance mu;tiplied by the random factor
-//                noisyDistance = distance + distance * (distance/maxDistance) * percent/100 * rand;
-//            }
-//            //System.out.println("Distance: " + distance + " Noisy distance: " + noisyDistance + " Random factor: " + rand);
-//        }
-        return sensors;
     }
 
     /**
